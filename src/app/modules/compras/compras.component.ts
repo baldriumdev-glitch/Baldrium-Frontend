@@ -6,14 +6,15 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ClientesService } from '../clientes/clientes.service';
 
 export interface CompraResumen {
-  ID:           number;
-  NombreCliente: string;
-  Productos:    string;
-  FechaCompra:  string;
-  TotalCompra:  string | number;
-  EstadoCompra: string;
+  ID:              number;
+  NombreCliente:   string;
+  CedulaCliente:   string;
+  Productos:       string;
+  FechaCompra:     string;
+  TotalCompra:     string | number;
+  EstadoCompra:    string;
   EstadoBeneficio: string | null;
-  FormaPago:    string;
+  FormaPago:       string;
 }
 
 export interface KpiCompras {
@@ -45,9 +46,20 @@ export class ComprasComponent implements OnInit {
   resultadosBusqueda: CompraResumen[] = [];
 
   // ── Estado ────────────────────────────────────────────────────────
-  cargando   = false;
-  errorTabla = '';
-  buscando   = false;
+  cargandoSemana = false;
+  cargandoMes    = false;
+  errorTabla     = '';
+  buscando       = false;
+
+  get cargando(): boolean {
+    return this.cargandoSemana || this.cargandoMes;
+  }
+
+  get valorConfirmadas(): number {
+    return this.comprasMes
+      .filter(c => c.EstadoCompra === 'Confirmado' || c.EstadoCompra === 'Confirmada')
+      .reduce((sum, c) => sum + +c.TotalCompra, 0);
+  }
 
   // ── Tab ───────────────────────────────────────────────────────────
   tabActivo: TabActivo = 'semana';
@@ -60,6 +72,7 @@ export class ComprasComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarSemana();
+    this.cargarMes();
     this.cargarKpi();
 
     // Debounce búsqueda 350 ms
@@ -90,41 +103,32 @@ export class ComprasComponent implements OnInit {
   }
 
   cargarSemana(): void {
-    this.cargando   = true;
-    this.errorTabla = '';
-    console.log('[Compras] cargarSemana → llamando listarComprasSemana()');
+    this.cargandoSemana = true;
+    this.errorTabla     = '';
     this.svc.listarComprasSemana().subscribe({
       next: c => {
-        console.log('[Compras] listarComprasSemana ✓ registros recibidos:', c.length, c);
-        this.comprasSemana = c;
-        this.cargando      = false;
+        this.comprasSemana  = c;
+        this.cargandoSemana = false;
       },
-      error: (err) => {
-        console.error('[Compras] listarComprasSemana ✗ error:', err);
-        this.errorTabla = 'Error al cargar compras.';
-        this.cargando   = false;
+      error: () => {
+        this.errorTabla     = 'Error al cargar compras.';
+        this.cargandoSemana = false;
       }
     });
   }
 
   cargarMes(): void {
-    if (this.comprasMes.length > 0) {
-      console.log('[Compras] cargarMes → ya cargado, skip');
-      return;
-    }
-    this.cargando   = true;
-    this.errorTabla = '';
-    console.log('[Compras] cargarMes → llamando listarComprasMes()');
+    if (this.comprasMes.length > 0) return;
+    this.cargandoMes = true;
+    this.errorTabla  = '';
     this.svc.listarComprasMes().subscribe({
       next: c => {
-        console.log('[Compras] listarComprasMes ✓ registros recibidos:', c.length, c);
-        this.comprasMes = c;
-        this.cargando   = false;
+        this.comprasMes  = c;
+        this.cargandoMes = false;
       },
-      error: (err) => {
-        console.error('[Compras] listarComprasMes ✗ error:', err);
-        this.errorTabla = 'Error al cargar compras.';
-        this.cargando   = false;
+      error: () => {
+        this.errorTabla  = 'Error al cargar compras.';
+        this.cargandoMes = false;
       }
     });
   }

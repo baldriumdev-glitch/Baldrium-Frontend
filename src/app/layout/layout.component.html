@@ -26,13 +26,17 @@
           </svg>
         </button>
 
-        <!-- Badges de todos los roles -->
+        <div class="topbar-divider"></div>
+
+        <!-- Badges de roles -->
         <div class="topbar-roles">
           <span
             *ngFor="let rol of roles"
             class="topbar-badge"
-            [ngClass]="getRolClass(rol)">
-            {{ rol }}
+            [ngClass]="getRolClass(rol)"
+            [title]="rol">
+            <span class="badge-dot"></span>
+            <span class="badge-label">{{ rol }}</span>
           </span>
         </div>
       </div>

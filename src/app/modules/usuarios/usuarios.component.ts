@@ -30,12 +30,10 @@ export class UsuariosComponent implements OnInit {
   // ── Estados de carga ───────────────────────────────────────────────
   cargando      = true;
   cargandoModal = false;
-  eliminando    = false;
 
   // ── Mensajes de error ──────────────────────────────────────────────
-  error         = '';
-  errorModal    = '';
-  errorEliminar = '';
+  error      = '';
+  errorModal = '';
 
   // ── Paginación tabla usuarios ──────────────────────────────────────
   paginaActual   = 1;
@@ -69,10 +67,6 @@ export class UsuariosComponent implements OnInit {
   rolesSeleccionados:      number[]     = [];
   form!:                   FormGroup;
   mostrarConfirmDesactivar = false;
-
-  // ── Modal eliminar ─────────────────────────────────────────────────
-  mostrarConfirmEliminar = false;
-  trabajadorAEliminar:   Trabajador | null = null;
 
   constructor(
     private svc: UsuariosService,
@@ -398,39 +392,6 @@ export class UsuariosComponent implements OnInit {
       },
       error: (err: any) => {
         this.errorModal = err?.error?.error || 'Error al cambiar estado.';
-      }
-    });
-  }
-
-  // ════════════════════════════════════════════════════════════════════
-  //  ELIMINAR
-  // ════════════════════════════════════════════════════════════════════
-
-  abrirConfirmEliminar(t: Trabajador, event: Event): void {
-    event.stopPropagation();
-    this.trabajadorAEliminar    = t;
-    this.mostrarConfirmEliminar = true;
-    this.errorEliminar          = '';
-  }
-
-  cerrarConfirmEliminar(): void {
-    this.mostrarConfirmEliminar = false;
-    this.trabajadorAEliminar    = null;
-    this.errorEliminar          = '';
-  }
-
-  ejecutarEliminar(): void {
-    if (!this.trabajadorAEliminar) return;
-    this.eliminando = true;
-    this.svc.eliminar(this.trabajadorAEliminar.cedula).subscribe({
-      next: () => {
-        this.eliminando = false;
-        this.cerrarConfirmEliminar();
-        this.cargarDatos();
-      },
-      error: (err: any) => {
-        this.eliminando    = false;
-        this.errorEliminar = err?.error?.error || 'No se pudo eliminar el usuario.';
       }
     });
   }

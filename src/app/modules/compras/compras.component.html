@@ -40,7 +40,7 @@
         </svg>
       </div>
       <div class="kpi-info">
-        <span class="kpi-value kpi-value-green">{{ cargandoKpi ? '—' : formatearPesos(+kpi.ValorVentasConfirmadas) }}</span>
+        <span class="kpi-value kpi-value-green">{{ cargandoMes ? '—' : formatearPesos(valorConfirmadas) }}</span>
         <span class="kpi-label">Valor ventas completadas del mes</span>
       </div>
     </div>
@@ -93,7 +93,9 @@
       <table class="tabla-baldrium" *ngIf="comprasSemana.length > 0">
         <thead>
           <tr>
+            <th>ID COMPRA</th>
             <th>CLIENTE</th>
+            <th>CÉDULA</th>
             <th>PRODUCTO</th>
             <th>FECHA</th>
             <th style="text-align:right">VALOR</th>
@@ -104,6 +106,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let c of comprasSemana">
+            <td class="td-id">#{{ c.ID }}</td>
             <td>
               <div class="user-cell">
                 <div class="avatar-initials avatar-{{ getPrimeraLetra(c.NombreCliente) }}">
@@ -112,13 +115,16 @@
                 <span class="user-cell-name">{{ c.NombreCliente }}</span>
               </div>
             </td>
+            <td class="td-cedula">{{ c.CedulaCliente }}</td>
             <td class="td-productos-inline" [title]="c.Productos">{{ c.Productos }}</td>
             <td class="td-fecha">{{ formatearFecha(c.FechaCompra) }}</td>
             <td style="text-align:right" class="td-valor-green">{{ formatearPesos(+c.TotalCompra) }}</td>
             <td>
               <span class="estado-badge-compra"
                     [class.compra-pendiente]="c.EstadoCompra === 'Pendiente'"
-                    [class.compra-pagada]="c.EstadoCompra === 'Pagada' || c.EstadoCompra === 'Completada'">
+                    [class.compra-pagada]="c.EstadoCompra === 'Pagada' || c.EstadoCompra === 'Completada'"
+                    [class.compra-confirmada]="c.EstadoCompra === 'Confirmado' || c.EstadoCompra === 'Confirmada'"
+                    [class.compra-rechazada]="c.EstadoCompra === 'Rechazado' || c.EstadoCompra === 'Rechazada'">
                 {{ c.EstadoCompra }}
               </span>
             </td>
@@ -165,7 +171,9 @@
       <table class="tabla-baldrium" *ngIf="comprasMes.length > 0">
         <thead>
           <tr>
+            <th>ID COMPRA</th>
             <th>CLIENTE</th>
+            <th>CÉDULA</th>
             <th>PRODUCTO</th>
             <th>FECHA</th>
             <th style="text-align:right">VALOR</th>
@@ -176,6 +184,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let c of comprasMes">
+            <td class="td-id">#{{ c.ID }}</td>
             <td>
               <div class="user-cell">
                 <div class="avatar-initials avatar-{{ getPrimeraLetra(c.NombreCliente) }}">
@@ -184,13 +193,16 @@
                 <span class="user-cell-name">{{ c.NombreCliente }}</span>
               </div>
             </td>
+            <td class="td-cedula">{{ c.CedulaCliente }}</td>
             <td class="td-productos-inline" [title]="c.Productos">{{ c.Productos }}</td>
             <td class="td-fecha">{{ formatearFecha(c.FechaCompra) }}</td>
             <td style="text-align:right" class="td-valor-green">{{ formatearPesos(+c.TotalCompra) }}</td>
             <td>
               <span class="estado-badge-compra"
                     [class.compra-pendiente]="c.EstadoCompra === 'Pendiente'"
-                    [class.compra-pagada]="c.EstadoCompra === 'Pagada' || c.EstadoCompra === 'Completada'">
+                    [class.compra-pagada]="c.EstadoCompra === 'Pagada' || c.EstadoCompra === 'Completada'"
+                    [class.compra-confirmada]="c.EstadoCompra === 'Confirmado' || c.EstadoCompra === 'Confirmada'"
+                    [class.compra-rechazada]="c.EstadoCompra === 'Rechazado' || c.EstadoCompra === 'Rechazada'">
                 {{ c.EstadoCompra }}
               </span>
             </td>
@@ -234,7 +246,7 @@
             <line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
           <input type="text" class="search-input"
-                 placeholder="Cliente, producto, fecha o estado..."
+                 placeholder="Buscar por ID, cédula, nombre, producto, fecha o estado..."
                  [(ngModel)]="busqueda"
                  (input)="onBuscar()" />
           <button class="search-clear" *ngIf="busqueda" (click)="limpiarBusqueda()">
@@ -254,7 +266,9 @@
       <table class="tabla-baldrium">
         <thead>
           <tr>
+            <th>ID COMPRA</th>
             <th>CLIENTE</th>
+            <th>CÉDULA</th>
             <th>PRODUCTO</th>
             <th>FECHA</th>
             <th style="text-align:right">VALOR</th>
@@ -265,6 +279,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let c of resultadosBusqueda">
+            <td class="td-id">#{{ c.ID }}</td>
             <td>
               <div class="user-cell">
                 <div class="avatar-initials avatar-{{ getPrimeraLetra(c.NombreCliente) }}">
@@ -273,13 +288,16 @@
                 <span class="user-cell-name">{{ c.NombreCliente }}</span>
               </div>
             </td>
+            <td class="td-cedula">{{ c.CedulaCliente }}</td>
             <td class="td-productos-inline" [title]="c.Productos">{{ c.Productos }}</td>
             <td class="td-fecha">{{ formatearFecha(c.FechaCompra) }}</td>
             <td style="text-align:right" class="td-valor-green">{{ formatearPesos(+c.TotalCompra) }}</td>
             <td>
               <span class="estado-badge-compra"
                     [class.compra-pendiente]="c.EstadoCompra === 'Pendiente'"
-                    [class.compra-pagada]="c.EstadoCompra === 'Pagada' || c.EstadoCompra === 'Completada'">
+                    [class.compra-pagada]="c.EstadoCompra === 'Pagada' || c.EstadoCompra === 'Completada'"
+                    [class.compra-confirmada]="c.EstadoCompra === 'Confirmado' || c.EstadoCompra === 'Confirmada'"
+                    [class.compra-rechazada]="c.EstadoCompra === 'Rechazado' || c.EstadoCompra === 'Rechazada'">
                 {{ c.EstadoCompra }}
               </span>
             </td>

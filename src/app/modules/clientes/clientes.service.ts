@@ -123,6 +123,7 @@ export interface CambiarEstadoDto {
 export interface CompraResumen {
   ID:              number;
   NombreCliente:   string;
+  CedulaCliente:   string;
   Productos:       string;
   FechaCompra:     string;
   TotalCompra:     string | number;

@@ -95,12 +95,18 @@ $radius-inp:  8px;
 }
 
 .logo-img {
-  width:      380px;      
+  width:      380px;
   height:     auto;
   object-fit: contain;
   filter:     drop-shadow(0 4px 24px rgba(0, 0, 0, 0.4));
+  animation:  logoFloat 5s ease-in-out 0.8s infinite;
 
   @include tablet { width: 160px; }
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px);   filter: drop-shadow(0 4px 24px rgba(0,0,0,0.4)); }
+  50%       { transform: translateY(-12px); filter: drop-shadow(0 16px 32px rgba(0,0,0,0.6)); }
 }
 
 .brand-name {
@@ -144,7 +150,14 @@ $radius-inp:  8px;
     transparent 70%
   );
   pointer-events: none;
+  animation: glowPulse 4s ease-in-out infinite;
 }
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
 
 // ════════════════════════════════════════════════════
 //  MOBILE HEADER (solo < 800px)
@@ -255,6 +268,17 @@ $radius-inp:  8px;
     letter-spacing: -0.3px;
 
     @include mobile { font-size: 24px; }
+
+    &::after {
+      content:    '';
+      display:    block;
+      height:     3px;
+      width:      0;
+      margin-top: 10px;
+      background: linear-gradient(90deg, $gold-400, $gold-600, transparent);
+      border-radius: 2px;
+      animation:  lineGrow 0.8s ease 0.4s both;
+    }
   }
 
   p {
@@ -263,6 +287,11 @@ $radius-inp:  8px;
     line-height: 1.6;
     margin:      0;
   }
+}
+
+@keyframes lineGrow {
+  from { width: 0; }
+  to   { width: 52px; }
 }
 
 // ════════════════════════════════════════════════════
@@ -295,6 +324,11 @@ $radius-inp:  8px;
 // ════════════════════════════════════════════════════
 .field-group {
   margin-bottom: 20px;
+  animation:     fadeInUp 0.5s ease both;
+
+  &:nth-child(1) { animation-delay: 0.25s; }
+  &:nth-child(2) { animation-delay: 0.40s; }
+  &:nth-child(3) { animation-delay: 0.55s; }
 
   label {
     display:        block;
@@ -413,11 +447,27 @@ $radius-inp:  8px;
   transition:     background 0.25s, transform 0.2s, box-shadow 0.25s;
   position:       relative;
   overflow:       hidden;
+  animation:      fadeInUp 0.5s ease 0.6s both;
+
+  &::after {
+    content:    '';
+    position:   absolute;
+    top:        0;
+    left:       -100%;
+    width:      60%;
+    height:     100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+    transform:  skewX(-20deg);
+  }
 
   &:hover:not(:disabled) {
     background:  $gold-600;
     transform:   translateY(-1px);
     box-shadow:  0 5px 18px rgba(180, 140, 50, 0.35);
+
+    &::after {
+      animation: shimmer 0.65s ease;
+    }
   }
 
   &:active:not(:disabled) {
@@ -431,6 +481,11 @@ $radius-inp:  8px;
   }
 
   &.is-loading { pointer-events: none; }
+}
+
+@keyframes shimmer {
+  from { left: -100%; }
+  to   { left:  150%; }
 }
 
 .spinner-wrap {
