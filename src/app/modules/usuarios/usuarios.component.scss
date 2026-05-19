@@ -136,12 +136,12 @@
   flex-wrap:       wrap;
 
   h2 {
-    font-family:    $font-display;
-    font-size:      14px;
-    font-weight:    700;
-    color:          rgba(255,255,255,0.90);
-    margin:         0;
-    white-space:    nowrap;
+    font-family: $font-display;
+    font-size:   14px;
+    font-weight: 700;
+    color:       rgba(255,255,255,0.90);
+    margin:      0;
+    white-space: nowrap;
   }
 }
 
@@ -402,6 +402,7 @@
 .td-correo     { color: $text-secondary; font-size: 13px; }
 .td-muted      { color: $text-muted; font-size: 12px; }
 .td-fecha      { font-size: 12px; color: $text-muted; white-space: nowrap; font-family: monospace; }
+.td-ip         { font-size: 12px; color: $text-muted; white-space: nowrap; font-family: monospace; }
 .td-descripcion {
   font-size:     12.5px;
   color:         $text-secondary;
@@ -412,8 +413,8 @@
 }
 
 .td-dispositivo {
-  min-width:  140px;
-  font-size:  11.5px;
+  min-width:   140px;
+  font-size:   11.5px;
   white-space: nowrap;
 }
 
@@ -456,28 +457,6 @@
   white-space:    nowrap;
 
   &:hover { background: $navy-600; }
-}
-
-.btn-eliminar {
-  width:           32px;
-  height:          32px;
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  background:      rgba(231,76,60,0.08);
-  border:          1.5px solid rgba(231,76,60,0.25);
-  border-radius:   $radius-sm;
-  color:           $danger;
-  cursor:          pointer;
-  transition:      all 0.2s;
-  flex-shrink:     0;
-
-  &:hover {
-    background:   $danger;
-    border-color: $danger;
-    color:        $white;
-    box-shadow:   0 4px 12px rgba(231,76,60,0.30);
-  }
 }
 
 // ── Badges ────────────────────────────────────────────────────────
@@ -653,65 +632,4 @@
   display:         flex;
   gap:             10px;
   justify-content: center;
-}
-
-// ── Modal pequeño ─────────────────────────────────────────────────
-.modal-card-sm { max-width: 460px; }
-
-// ── Icono danger ──────────────────────────────────────────────────
-.modal-icon-danger {
-  background: rgba(231,76,60,0.10) !important;
-  color:      $danger !important;
-}
-
-// ── Body confirmar eliminar ───────────────────────────────────────
-.eliminar-confirm-body {
-  display:       flex;
-  align-items:   flex-start;
-  gap:           16px;
-  margin-bottom: 16px;
-}
-
-.eliminar-nombre {
-  font-size:   15px;
-  font-weight: 700;
-  color:       $text-primary;
-  margin:      0 0 4px;
-}
-
-.eliminar-correo {
-  font-size: 13px;
-  color:     $text-muted;
-  margin:    0 0 12px;
-}
-
-.eliminar-advertencia {
-  font-size:   13px;
-  color:       $text-secondary;
-  line-height: 1.5;
-  margin:      0;
-}
-
-// ── Botón danger filled ───────────────────────────────────────────
-.btn-danger-filled {
-  display:       inline-flex;
-  align-items:   center;
-  gap:           8px;
-  padding:       9px 18px;
-  background:    $danger;
-  border:        none;
-  border-radius: $radius-md;
-  color:         $white;
-  font-family:   $font-body;
-  font-size:     13px;
-  font-weight:   600;
-  cursor:        pointer;
-  transition:    all 0.2s;
-
-  &:hover:not(:disabled) {
-    background: darken(#E74C3C, 8%);
-    box-shadow: 0 4px 14px rgba(231,76,60,0.40);
-  }
-
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
 }

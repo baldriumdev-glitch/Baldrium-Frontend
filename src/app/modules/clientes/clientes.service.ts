@@ -58,11 +58,12 @@ export interface HistorialVisita {
 }
 
 export interface ProductoAlimentacion {
-  id:     number;
-  nombre: string;
-  precio: number;
-  stock:  number;
+  ID:       number;
+  Nombre:   string;
+  Valor:    number;
+  Cantidad: number;
 }
+
 
 export interface ProductoCocina {
   ID:       number;

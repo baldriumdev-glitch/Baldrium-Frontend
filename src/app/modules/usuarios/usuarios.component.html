@@ -66,9 +66,7 @@
             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
           </svg>
           Filtros
-          <span class="filtro-badge" *ngIf="filtrosActivos > 0">
-            {{ filtrosActivos }}
-          </span>
+          <span class="filtro-badge" *ngIf="filtrosActivos > 0">{{ filtrosActivos }}</span>
         </button>
         <button class="btn-filtro" (click)="exportarPDF()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -122,9 +120,7 @@
       Cargando usuarios...
     </div>
 
-    <div class="alert-error-inline" *ngIf="error && !cargando">
-      {{ error }}
-    </div>
+    <div class="alert-error-inline" *ngIf="error && !cargando">{{ error }}</div>
 
     <div class="table-responsive" *ngIf="!cargando && !error">
       <table class="tabla-baldrium">
@@ -141,11 +137,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let t of paginados">
-
-            <!-- Cédula -->
             <td class="td-cedula">{{ t.cedula }}</td>
-
-            <!-- Usuario -->
             <td>
               <div class="user-cell">
                 <div class="avatar-initials avatar-{{ getPrimeraLetra(t.nombre) }}">
@@ -157,14 +149,8 @@
                 </div>
               </div>
             </td>
-
-            <!-- Correo -->
             <td class="td-correo">{{ t.correo }}</td>
-
-            <!-- Celular -->
             <td class="td-muted">{{ t.celular }}</td>
-
-            <!-- Roles -->
             <td>
               <div class="roles-wrap">
                 <span *ngFor="let r of t.roles"
@@ -174,24 +160,16 @@
                 </span>
               </div>
             </td>
-
-            <!-- Estado -->
             <td>
-              <span class="estado-badge"
-                    [ngClass]="t.activo ? 'activo' : 'inactivo'">
+              <span class="estado-badge" [ngClass]="t.activo ? 'activo' : 'inactivo'">
                 {{ t.activo ? 'Activo' : 'Inactivo' }}
               </span>
             </td>
-
-            <!-- Acciones -->
             <td>
               <div class="acciones-wrap">
-                <button class="btn-editar" (click)="abrirEditar(t)">
-                  EDITAR
-                </button>
+                <button class="btn-editar" (click)="abrirEditar(t)">EDITAR</button>
               </div>
             </td>
-
           </tr>
           <tr *ngIf="paginados.length === 0">
             <td colspan="7" class="table-empty">No se encontraron usuarios</td>
@@ -298,8 +276,7 @@
                  (change)="paginaAuditoria = 1" />
         </div>
         <div class="filtro-actions">
-          <button class="btn btn-secondary btn-sm"
-                  (click)="limpiarFiltrosAuditoria()">
+          <button class="btn btn-secondary btn-sm" (click)="limpiarFiltrosAuditoria()">
             Limpiar
           </button>
         </div>
@@ -316,6 +293,7 @@
             <th>MÓDULO</th>
             <th>RESULTADO</th>
             <th>DESCRIPCIÓN</th>
+            <th>IP</th>
             <th>DISPOSITIVO</th>
           </tr>
         </thead>
@@ -347,6 +325,7 @@
               </span>
             </td>
             <td class="td-descripcion">{{ a.Descripcion }}</td>
+            <td class="td-ip">{{ a.DireccionIP || '—' }}</td>
             <td class="td-dispositivo">
               <ng-container *ngIf="a.Dispositivo; else sinDispositivo">
                 <span class="dispositivo-nombre">
@@ -362,7 +341,7 @@
             </td>
           </tr>
           <tr *ngIf="auditoriaPaginada.length === 0">
-            <td colspan="7" class="table-empty">Sin actividad registrada</td>
+            <td colspan="8" class="table-empty">Sin actividad registrada</td>
           </tr>
         </tbody>
       </table>
@@ -427,9 +406,7 @@
 
     <div class="modal-body" *ngIf="form" [formGroup]="form">
 
-      <div class="alert-error-inline" *ngIf="errorModal">
-        {{ errorModal }}
-      </div>
+      <div class="alert-error-inline" *ngIf="errorModal">{{ errorModal }}</div>
 
       <div class="confirm-box" *ngIf="mostrarConfirmDesactivar">
         <p>¿Confirmas
@@ -545,9 +522,7 @@
         </button>
       </div>
       <div class="modal-footer-right">
-        <button class="btn btn-secondary" (click)="cerrarModal()">
-          Cancelar
-        </button>
+        <button class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
         <button class="btn btn-primary"
                 (click)="guardar()"
                 [disabled]="form.invalid || cargandoModal">
@@ -566,4 +541,3 @@
 
   </div>
 </div>
-

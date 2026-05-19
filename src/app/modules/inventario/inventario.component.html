@@ -201,7 +201,6 @@
             <th>VALOR UNITARIO</th>
             <th>CANTIDAD</th>
             <th>ESTADO STOCK</th>
-            <th>ÚLTIMA ACT.</th>
             <th>ACCIÓN</th>
           </tr>
         </thead>
@@ -221,7 +220,6 @@
                 {{ getEstadoStock(p.Cantidad) }}
               </span>
             </td>
-            <td class="td-fecha">{{ formatearFecha(p.UpdatedAt || '') }}</td>
             <td>
               <div class="acciones-wrap">
                 <button class="btn-editar" (click)="abrirEditar(p)">EDITAR</button>
@@ -238,7 +236,7 @@
             </td>
           </tr>
           <tr *ngIf="paginados.length === 0">
-            <td colspan="8" class="table-empty">No se encontraron productos</td>
+            <td colspan="7" class="table-empty">No se encontraron productos</td>
           </tr>
         </tbody>
       </table>
@@ -356,7 +354,7 @@
             <th>RESPONSABLE</th>
             <th>MOVIMIENTO</th>
             <th>CANT. ANT.</th>
-            <th>MOVIMIENTO</th>
+            <th>CANT. MOV.</th>
             <th>CANT. POST.</th>
             <th>MOTIVO</th>
             <th>OBSERVACIONES</th>
