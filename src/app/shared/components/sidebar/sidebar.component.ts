@@ -12,14 +12,29 @@ export interface NavItem {
   roles: string[];
 }
 
+// IMPORTANTE: estos roles deben coincidir EXACTAMENTE con los que exige
+// cada ruta en el backend (ver verificarRol(...) en logica/src/rutas/**).
+// Si un rol aparece aquí pero no en el backend (o viceversa), el usuario
+// verá una pestaña que al abrirla le devuelve 403 sin datos.
+//
+// Mapeo verificado contra el backend (logica/src/app.js + rutas/**):
+//   /api/Usuario      → verificarRol('Director')
+//   /api/Inventario   → verificarRol('Coordinador')
+//   /api/telemercadeo → verificarRol('Asesor comercial')   (cubre /clientes y /compras)
+//
+// Telemercadeo y Beneficios todavía son páginas "en construcción" sin
+// backend propio (no hacen ninguna llamada HTTP aún), así que por ahora
+// no producen 403 sin importar el rol. Cuando se implementen sus rutas
+// reales en el backend, actualizar esta lista para que coincida.
 const NAV_ITEMS: NavItem[] = [
   { label: 'Usuarios',     ruta: '/usuarios',     icono: 'users',     roles: ['Director'] },
-  { label: 'Visitas',      ruta: '/clientes',     icono: 'clientes',  roles: ['Coordinador','Auxiliar Administrativo','Asesor comercial'] },
+  { label: 'Visitas',      ruta: '/clientes',     icono: 'clientes',  roles: ['Asesor comercial'] },
   { label: 'Inventario',   ruta: '/inventario',   icono: 'inventory', roles: ['Coordinador'] },
-  { label: 'Compras',      ruta: '/compras',      icono: 'compras',   roles: ['Coordinador','Asesor comercial'] },
+  { label: 'Compras',      ruta: '/compras',      icono: 'compras',   roles: ['Asesor comercial'] },
   { label: 'Telemercadeo', ruta: '/telemercadeo', icono: 'phone',     roles: ['Coordinador','Auxiliar Administrativo','Asesor comercial','Telemercaderista'] },
   { label: 'Beneficios',   ruta: '/beneficios',   icono: 'gift',      roles: ['Coordinador','Auxiliar Administrativo','Asesor comercial'] },
-  { label: 'Reporte',      ruta: '/reporte',      icono: 'report',    roles: ['Director'] }
+  // 'Reporte' se quita del menú: la ruta /reporte no existe aún en app.routes.ts
+  // ni tiene backend implementado. Volver a agregarla cuando exista.
 ];
 
 @Component({
