@@ -8,7 +8,7 @@ import {
   ItemCompra, Referido, CambiarEstadoDto, NuevaCompraDto, CrearClienteDto
 } from './clientes.service';
 
-type EstadoVisita = 'Pendiente' | 'Visitado' | 'Rechaza' | 'No contesta';
+type EstadoVisita = 'Pendiente' | 'Visitado' | 'Rechaza' | 'No contesta' | 'Re agendada';
 type Periodo      = 'semana' | 'mes' | 'personalizado';
 
 @Component({
@@ -72,7 +72,7 @@ export class ClientesComponent implements OnInit {
   errorModal          = '';
   intentoGuardar      = false;
 
-  readonly ESTADOS: EstadoVisita[] = ['Pendiente', 'Visitado', 'Rechaza', 'No contesta'];
+  readonly ESTADOS: EstadoVisita[] = ['Pendiente', 'Visitado', 'Rechaza', 'No contesta', 'Re agendada'];
 
   // ── Modal nueva compra ────────────────────────────────────────────
   mostrarModalCompra    = false;
@@ -592,8 +592,9 @@ export class ClientesComponent implements OnInit {
 
   getEstadoClass(estado: string): string {
     const map: Record<string, string> = {
-      'Pendiente': 'estado-pendiente', 'Visitado': 'estado-visitado',
-      'Rechaza': 'estado-rechaza',     'No contesta': 'estado-nocontesta'
+      'Pendiente': 'estado-pendiente',   'Visitado':     'estado-visitado',
+      'Rechaza':   'estado-rechaza',     'No contesta':  'estado-nocontesta',
+      'Re agendada': 'estado-reagendada'
     };
     return map[estado] ?? 'estado-default';
   }

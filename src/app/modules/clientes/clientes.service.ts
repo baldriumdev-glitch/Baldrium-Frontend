@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment';
 export interface Visita {
   ID:                number;
   FechaVisita:       string;
-  Estado:            'Pendiente' | 'Visitado' | 'Rechaza' | 'No contesta';
+  Estado:            'Pendiente' | 'Visitado' | 'Rechaza' | 'No contesta' | 'Re agendada';
   Notas:             string | null;
   PersonaID:         number;
   NombrePersona:     string;

@@ -460,6 +460,7 @@
   &.estado-visitado    { background: rgba(39,174,96,0.15);  color: #27AE60; }
   &.estado-rechaza     { background: rgba(231,76,60,0.15);  color: #E74C3C; }
   &.estado-nocontesta  { background: rgba(100,116,139,0.15); color: #475569; }
+  &.estado-reagendada  { background: rgba(59,130,246,0.15); color: #3B82F6; }
   &.estado-default     { background: rgba(148,163,184,0.15); color: #64748B; }
 }
 
@@ -875,6 +876,7 @@
   &.estado-visitado   { background: rgba(39,174,96,0.15);  color: #27AE60; }
   &.estado-rechaza    { background: rgba(231,76,60,0.15);  color: #E74C3C; }
   &.estado-nocontesta { background: rgba(100,116,139,0.15); color: #475569; }
+  &.estado-reagendada { background: rgba(59,130,246,0.15); color: #3B82F6; }
 }
 
 .estado-actual-tag {

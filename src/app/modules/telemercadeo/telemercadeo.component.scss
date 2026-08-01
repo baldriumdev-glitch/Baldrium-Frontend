@@ -1,268 +1,408 @@
 @import 'assets/styles/tokens';
 
+// ════════════════════════════════════════════════════════════════════
+//  LAYOUT
+// ════════════════════════════════════════════════════════════════════
+
 .page-telemercadeo {
   display:        flex;
   flex-direction: column;
-  gap:            20px;
+  gap:            24px;
+  background:     linear-gradient(180deg, #EDEEF3 0%, #F2F4F7 100%);
+  min-height:     100%;
   padding:        4px;
   animation:      fadeInLeft 0.3s ease;
 }
 
-// ── KPI ────────────────────────────────────────────────────────
-.kpi-grid {
+// ── Cabecera ───────────────────────────────────────────────────────
+.page-header {
+  display:         flex;
+  align-items:     flex-start;
+  justify-content: space-between;
+  gap:             16px;
+  flex-wrap:       wrap;
+
+  h1 {
+    font-family: $font-display;
+    font-size:   32px;
+    font-weight: 800;
+    color:       #0F1923;
+    margin:      0 0 6px;
+  }
+
+  p { font-size: 14px; color: #555770; font-weight: 500; margin: 0; }
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  KPIs
+// ════════════════════════════════════════════════════════════════════
+
+.kpi-grid-2 {
   display:               grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 320px));
   gap:                   16px;
 
   @include mobile { grid-template-columns: 1fr; }
-  @include tablet { grid-template-columns: repeat(2, 1fr); }
-
-  &-2 { grid-template-columns: repeat(2, minmax(0, 320px)); }
 }
 
 .kpi-card {
-  @include card;
-  padding: 20px 24px;
+  background:    $card-bg;
+  border-radius: $radius-lg;
+  border:        1px solid $border;
+  box-shadow:    $shadow-sm;
+  padding:       20px;
+  display:       flex;
+  align-items:   center;
+  gap:           14px;
+  transition:    box-shadow 0.2s;
 
-  .kpi-label {
-    font-size:      11px;
-    font-weight:    700;
-    color:          $text-muted;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    margin-bottom:  10px;
-    line-height:    1.4;
-  }
-
-  .kpi-value {
-    font-family: $font-display;
-    font-size:   40px;
-    font-weight: 800;
-    color:       $text-primary;
-    line-height: 1;
-
-    &-danger  { color: $danger;  }
-    &-success { color: $success; }
-  }
+  &:hover { box-shadow: $shadow-md; }
 }
 
-// ── Tabs ───────────────────────────────────────────────────────
-.tabs-bar {
+.kpi-icon {
+  width:           44px;
+  height:          44px;
+  border-radius:   $radius-md;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  flex-shrink:     0;
+
+  &-blue   { background: rgba(59,130,246,0.12); color: #3B82F6; }
+  &-yellow { background: rgba(245,158,11,0.12); color: #D97706; }
+}
+
+.kpi-info {
+  display:        flex;
+  flex-direction: column;
+  gap:            3px;
+}
+
+.kpi-value {
+  font-family: $font-display;
+  font-size:   26px;
+  font-weight: 800;
+  color:       $text-primary;
+  line-height: 1;
+}
+
+.kpi-label {
+  font-size:   12px;
+  color:       $text-muted;
+  font-weight: 500;
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  TABS
+// ════════════════════════════════════════════════════════════════════
+
+.tabs-wrap {
   display:        flex;
   gap:            4px;
-  border-bottom:  2px solid $border;
+  border-bottom:  2px solid #D0D3E0;
+  padding-bottom: 0;
 }
 
 .tab-btn {
-  padding:       10px 20px;
-  background:    none;
+  display:       inline-flex;
+  align-items:   center;
+  gap:           7px;
+  padding:       11px 18px;
+  background:    transparent;
   border:        none;
-  cursor:        pointer;
-  font-family:   $font-body;
-  font-size:     14px;
-  font-weight:   600;
-  color:         $text-muted;
   border-bottom: 2px solid transparent;
   margin-bottom: -2px;
+  font-family:   $font-body;
+  font-size:     13px;
+  font-weight:   600;
+  color:         #6B7080;
+  cursor:        pointer;
   transition:    all 0.2s;
+  white-space:   nowrap;
 
-  &:hover     { color: $text-primary; }
-  &.tab-active { color: $text-primary; border-color: $gold; }
+  svg { opacity: 0.6; transition: opacity 0.2s; }
+
+  &:hover {
+    color: #0F1923;
+    svg   { opacity: 1; }
+  }
+
+  &.active {
+    color:               $navy-800;
+    border-bottom-color: $gold;
+
+    svg { opacity: 1; stroke: $gold; }
+  }
 }
 
-// ── Card section ───────────────────────────────────────────────
+.tab-count {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  background:      #E5E7F0;
+  color:           #555770;
+  border-radius:   $radius-full;
+  font-size:       10px;
+  font-weight:     700;
+  min-width:       20px;
+  height:          20px;
+  padding:         0 6px;
+
+  .active & {
+    background: rgba(201,168,76,0.15);
+    color:      $gold-dark;
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  CARD SECTION
+// ════════════════════════════════════════════════════════════════════
+
 .card-section {
-  @include card;
-  overflow: hidden;
+  background:    $card-bg;
+  border-radius: $radius-lg;
+  border:        1px solid #D8DAE8;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.04),
+    0 6px 16px rgba(0,0,0,0.07),
+    0 16px 32px rgba(0,0,0,0.05);
+  overflow:      hidden;
+  transition:    box-shadow 0.2s;
+  animation:     fadeInLeft 0.25s ease;
+
+  &:hover {
+    box-shadow:
+      0 4px 8px rgba(0,0,0,0.06),
+      0 12px 24px rgba(0,0,0,0.10),
+      0 24px 48px rgba(0,0,0,0.07);
+  }
 }
 
-.section-dot-header {
-  display:        flex;
-  align-items:    center;
-  gap:            8px;
-  padding:        14px 20px;
-  font-size:      11px;
-  font-weight:    700;
-  color:          $text-muted;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-  border-bottom:  1px solid $border;
+.section-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         14px 20px;
+  background:      $navy-800;
+  gap:             12px;
+  flex-wrap:       wrap;
+
+  h2 {
+    font-family: $font-display;
+    font-size:   14px;
+    font-weight: 700;
+    color:       rgba(255,255,255,0.90);
+    margin:      0;
+    white-space: nowrap;
+  }
 }
 
-.dot {
-  width:         8px;
-  height:        8px;
-  border-radius: 50%;
-  flex-shrink:   0;
-
-  &-green { background: $success; }
-  &-blue  { background: $info; }
-}
-
-// ── Buscador ──────────────────────────────────────────────────
-.search-row {
+.section-header-right {
   display:     flex;
   align-items: center;
-  gap:         16px;
-  padding:     16px 20px;
+  gap:         10px;
   flex-wrap:   wrap;
 }
 
+// ── Buscador oscuro ────────────────────────────────────────────────
 .search-wrap {
   position:    relative;
   display:     flex;
   align-items: center;
-
-  &-full { flex: 1; min-width: 240px; }
 }
 
 .search-icon {
   position:       absolute;
-  left:           12px;
-  color:          $text-muted;
+  left:           10px;
+  color:          rgba(255,255,255,0.45);
   pointer-events: none;
 }
 
 .search-input {
-  width:         100%;
-  padding:       9px 14px 9px 36px;
-  background:    #F8F9FB;
-  border:        1.5px solid $border;
+  padding:       8px 14px 8px 34px;
+  background:    rgba(255,255,255,0.10);
+  border:        1.5px solid rgba(255,255,255,0.15);
   border-radius: $radius-md;
   font-family:   $font-body;
-  font-size:     13.5px;
-  color:         $text-primary;
+  font-size:     13px;
+  color:         $white;
   outline:       none;
+  width:         240px;
   transition:    all 0.2s;
 
-  &::placeholder { color: #BBC0CC; }
+  &::placeholder { color: rgba(255,255,255,0.40); }
+
   &:focus {
     border-color: $gold;
-    background:   $white;
-    box-shadow:   0 0 0 3px rgba(201,168,76,0.12);
+    background:   rgba(255,255,255,0.15);
   }
+
+  @media (max-width: 767px) { width: 160px; }
 }
 
-.search-hint {
-  display:     flex;
-  align-items: center;
-  gap:         6px;
-  font-size:   12px;
-  color:       $text-muted;
-  white-space: nowrap;
-}
+// ════════════════════════════════════════════════════════════════════
+//  TABLA
+// ════════════════════════════════════════════════════════════════════
 
-// ── Tabla helpers ──────────────────────────────────────────────
 .table-responsive { overflow-x: auto; }
-
-.td-fecha    { white-space: nowrap; font-weight: 600; font-size: 13px; }
-.td-muted    { color: $text-muted; font-size: 13px; }
-.td-center   { text-align: center; }
-.td-notas    { max-width: 200px; @include truncate; }
-.td-producto { max-width: 260px; @include truncate; }
-.td-valor    { font-weight: 700; color: $success; white-space: nowrap; }
 
 .table-loading {
   display:     flex;
   align-items: center;
-  gap:         10px;
+  gap:         12px;
   padding:     32px 20px;
   color:       $text-muted;
-  font-size:   13px;
+  font-size:   14px;
 }
 
 .table-empty {
   text-align: center;
-  padding:    32px;
+  padding:    32px !important;
   color:      $text-muted;
-  font-size:  13px;
+  font-size:  14px;
 }
 
 .alert-error-inline {
-  padding:       10px 16px;
-  background:    $danger-bg;
-  border:        1px solid rgba(231,76,60,0.25);
+  background:    rgba(231,76,60,0.08);
+  border:        1px solid rgba(231,76,60,0.2);
   border-radius: $radius-md;
-  color:         $danger;
+  padding:       12px 16px;
   font-size:     13px;
+  color:         $danger;
+  margin:        16px;
 }
 
-// ── Estado badges ──────────────────────────────────────────────
-.badge-estado-v {
-  display:       inline-flex;
-  align-items:   center;
-  gap:           4px;
-  padding:       4px 10px;
-  border-radius: $radius-full;
-  font-size:     12px;
-  font-weight:   700;
+.tabla-baldrium {
+  width:           100%;
+  border-collapse: separate;
+  border-spacing:  0;
+
+  thead tr {
+    background: linear-gradient(180deg, #E8EAF2 0%, #DDDFE9 100%);
+
+    th {
+      padding:        13px 16px;
+      font-size:      11px;
+      font-weight:    800;
+      color:          #3A3D56;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      text-align:     left;
+      white-space:    nowrap;
+      border-bottom:  2px solid #C8CADE;
+      border-top:     1px solid #E0E2EE;
+
+      &:first-child { padding-left: 20px; }
+      &:last-child  { padding-right: 20px; }
+    }
+  }
+
+  tbody tr {
+    transition: all 0.15s;
+
+    &:nth-child(odd)  { background: #FFFFFF; }
+    &:nth-child(even) { background: #F5F6FA; }
+    &:last-child td   { border-bottom: none; }
+
+    &:hover { background: #ECEEF8 !important; box-shadow: inset 3px 0 0 $gold; }
+
+    td {
+      padding:        14px 16px;
+      font-size:      13.5px;
+      color:          $text-primary;
+      vertical-align: middle;
+      border-bottom:  1px solid #E8EAF2;
+
+      &:first-child { padding-left: 20px; }
+      &:last-child  { padding-right: 20px; }
+    }
+  }
+}
+
+// ── Celdas especiales ──────────────────────────────────────────────
+.td-fecha     { font-size: 12px; color: $text-muted; white-space: nowrap; font-family: monospace; }
+.td-center    { text-align: center; font-weight: 700; }
+.td-direccion {
+  font-size:     13px;
+  color:         $text-secondary;
+  max-width:     220px;
   white-space:   nowrap;
-
-  &.estado-visitado    { background: $success-bg;                       color: $success;     }
-  &.estado-pendiente   { background: $warning-bg;                       color: $warning;     }
-  &.estado-rechazado   { background: $danger-bg;                        color: $danger;      }
-  &.estado-no-contesta { background: rgba(144,148,166,0.12);            color: $text-muted;  }
+  overflow:      hidden;
+  text-overflow: ellipsis;
 }
 
-// ── Tipo / pago badges ─────────────────────────────────────────
-.tipo-badge {
-  padding:       3px 8px;
-  background:    $info-bg;
-  color:         $info;
-  border-radius: $radius-full;
-  font-size:     11px;
-  font-weight:   600;
+// ── User cell ──────────────────────────────────────────────────────
+.user-cell      { display: flex; align-items: center; gap: 10px; }
+.user-cell-info { display: flex; flex-direction: column; }
+.user-cell-name { font-size: 13px; font-weight: 600; color: $text-primary; white-space: nowrap; }
+.user-cell-id   { font-size: 11px; color: $text-muted; }
+
+// ── Badge estado ───────────────────────────────────────────────────
+.badge-estado-tele {
+  display:        inline-flex;
+  align-items:    center;
+  padding:        4px 10px;
+  border-radius:  $radius-full;
+  font-size:      10px;
+  font-weight:    700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  white-space:    nowrap;
+
+  &.estado-pendiente   { background: $warning-bg; color: $warning; }
+  &.estado-no-responde { background: rgba(148,163,184,0.15); color: #64748B; }
+  &.estado-contactado  { background: $info-bg;    color: $info; }
+  &.estado-agendado    { background: $success-bg; color: $success; }
+
+  // ── Estados de visita (tab "Visitas agendadas") ──
+  &.estado-visitado    { background: $success-bg; color: $success; }
+  &.estado-rechaza     { background: $danger-bg;  color: $danger; }
+  &.estado-no-contesta { background: rgba(148,163,184,0.15); color: #64748B; }
+  &.estado-reagendada  { background: $info-bg;    color: $info; }
+
+  &.estado-default     { background: rgba(148,163,184,0.15); color: #64748B; }
 }
 
-.forma-pago-badge {
-  padding:       3px 8px;
-  background:    rgba(201,168,76,0.12);
-  color:         $gold-dark;
-  border-radius: $radius-full;
-  font-size:     11px;
-  font-weight:   600;
-  white-space:   nowrap;
+// ── Paginación ─────────────────────────────────────────────────────
+.paginacion {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         12px 20px;
+  border-top:      1px solid #D0D3E0;
+  background:      #F0F2F8;
+
+  .pag-info { font-size: 12.5px; font-weight: 500; color: $text-secondary; }
+
+  .pag-btns {
+    display: flex;
+    gap:     6px;
+
+    button {
+      width:           32px;
+      height:          32px;
+      border-radius:   $radius-sm;
+      border:          1.5px solid #C0C4D8;
+      background:      $white;
+      color:           $navy-800;
+      cursor:          pointer;
+      display:         flex;
+      align-items:     center;
+      justify-content: center;
+      transition:      all 0.15s;
+
+      svg { stroke: $navy-800; }
+
+      &:hover:not(:disabled) {
+        background:   $navy-800;
+        border-color: $navy-800;
+        color:        $white;
+        svg { stroke: $white; }
+      }
+
+      &:disabled { opacity: 0.35; cursor: not-allowed; }
+    }
+  }
 }
 
-// ── Beneficio cell ────────────────────────────────────────────
-.beneficio-cell {
-  display:     inline-flex;
-  align-items: center;
-  gap:         5px;
-  font-size:   12px;
-  font-weight: 500;
-
-  &.sin-beneficio { color: $danger; }
-}
-
-// ── Acciones ──────────────────────────────────────────────────
-.acciones-wrap {
-  display: flex;
-  gap:     6px;
-}
-
-.btn-accion-sm {
-  padding:       5px 10px;
-  border-radius: $radius-sm;
-  font-family:   $font-body;
-  font-size:     12px;
-  font-weight:   600;
-  cursor:        pointer;
-  border:        none;
-  white-space:   nowrap;
-  transition:    all 0.2s;
-}
-
-.btn-ver {
-  background: #F0F2F5;
-  color:      $text-secondary;
-  border:     1px solid $border;
-  &:hover { background: $border; }
-}
-
-.btn-comprar {
-  background: $success-bg;
-  color:      $success;
-  border:     1px solid rgba(39,174,96,0.25);
-  &:hover { background: rgba(39,174,96,0.18); }
-}
+@keyframes fadeInLeft { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
