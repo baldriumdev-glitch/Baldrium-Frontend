@@ -33,13 +33,13 @@ export interface LoginResponse {
   usuario: Usuario;
 }
 
-// Permisos por módulo
+// Permisos por módulo (debe coincidir con NAV_ITEMS en sidebar.component.ts)
 const PERMISOS: Record<RolUsuario, string[]> = {
-  'Director':                ['usuarios','auditoria'], //usuarios
-  'Coordinador':             ['inventario'], // inventario
-  'Auxiliar Administrativo': ['beneficios','telemercadeo'], //Validar beneficios y Validar compras - diferentes vistas
-  'Asesor comercial':        ['telemercadeo','beneficios'], //clientes, compras
-  'Telemercaderista':        ['telemercadeo'] //contactos y beneficios
+  'Director':                ['usuarios'],
+  'Coordinador':             ['inventario'],
+  'Asesor comercial':        ['clientes','compras'],
+  'Telemercaderista':        ['telemercadeo','beneficios'],
+  'Auxiliar Administrativo': ['aprobar-compras','aprobar-beneficios']
 };
 
 @Injectable({ providedIn: 'root' })

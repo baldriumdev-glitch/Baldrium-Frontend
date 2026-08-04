@@ -1,21 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BeneficiosService } from './beneficios.service';
+import { AprobarBeneficiosService } from './aprobar-beneficios.service';
 
 @Component({
-  selector:    'app-beneficios',
+  selector:    'app-aprobar-beneficios',
   standalone:  true,
   imports:     [CommonModule],
-  templateUrl: './beneficios.component.html',
-  styleUrls:   ['./beneficios.component.scss']
+  templateUrl: './aprobar-beneficios.component.html',
+  styleUrls:   ['./aprobar-beneficios.component.scss']
 })
-export class BeneficiosComponent implements OnInit {
+export class AprobarBeneficiosComponent implements OnInit {
 
   cargando = true;
   error    = '';
   mensaje  = '';
 
-  constructor(private svc: BeneficiosService) {}
+  constructor(private svc: AprobarBeneficiosService) {}
 
   ngOnInit(): void {
     this.svc.obtener().subscribe({
@@ -25,7 +25,7 @@ export class BeneficiosComponent implements OnInit {
       },
       error: (err: any) => {
         this.cargando = false;
-        this.error    = err?.error?.error || 'Error al cargar la sección de beneficios.';
+        this.error    = err?.error?.error || 'Error al cargar la sección de aprobar beneficios.';
       }
     });
   }

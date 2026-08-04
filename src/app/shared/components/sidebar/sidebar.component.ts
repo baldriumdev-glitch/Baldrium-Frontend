@@ -18,21 +18,22 @@ export interface NavItem {
 // verá una pestaña que al abrirla le devuelve 403 sin datos.
 //
 // Mapeo verificado contra el backend (logica/src/app.js + rutas/**):
-//   /api/Usuario      → verificarRol('Director')
-//   /api/Inventario   → verificarRol('Coordinador')
-//   /api/telemercadeo → verificarRol('Asesor comercial')   (cubre /clientes y /compras)
-//
-// Telemercadeo y Beneficios todavía son páginas "en construcción" sin
-// backend propio (no hacen ninguna llamada HTTP aún), así que por ahora
-// no producen 403 sin importar el rol. Cuando se implementen sus rutas
-// reales en el backend, actualizar esta lista para que coincida.
+//   /api/Usuario                      → verificarRol('Director')
+//   /api/Inventario                   → verificarRol('Coordinador')
+//   /api/telemercadeo/prospectos/*    → verificarRol('Telemercaderista')
+//   /api/telemercadeo/visitas/*       → verificarRol('Telemercaderista')  (cola de gestión)
+//   /api/telemercadeo/beneficios      → verificarRol('Telemercaderista')
+//   /api/clientes, /api/compras       → verificarRol('Asesor comercial')  (Visitas y Compras)
+//   /api/auxiliar-administrativo/*    → verificarRol('Auxiliar Administrativo')
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Usuarios',     ruta: '/usuarios',     icono: 'users',     roles: ['Director'] },
-  { label: 'Visitas',      ruta: '/clientes',     icono: 'clientes',  roles: ['Asesor comercial'] },
-  { label: 'Inventario',   ruta: '/inventario',   icono: 'inventory', roles: ['Coordinador'] },
-  { label: 'Compras',      ruta: '/compras',      icono: 'compras',   roles: ['Asesor comercial'] },
-  { label: 'Telemercadeo', ruta: '/telemercadeo', icono: 'phone',     roles: ['Coordinador','Auxiliar Administrativo','Asesor comercial','Telemercaderista'] },
-  { label: 'Beneficios',   ruta: '/beneficios',   icono: 'gift',      roles: ['Coordinador','Auxiliar Administrativo','Asesor comercial'] },
+  { label: 'Usuarios',            ruta: '/usuarios',            icono: 'users',     roles: ['Director'] },
+  { label: 'Visitas',             ruta: '/clientes',             icono: 'clientes',  roles: ['Asesor comercial'] },
+  { label: 'Inventario',          ruta: '/inventario',          icono: 'inventory', roles: ['Coordinador'] },
+  { label: 'Compras',             ruta: '/compras',              icono: 'compras',   roles: ['Asesor comercial'] },
+  { label: 'Telemercadeo',        ruta: '/telemercadeo',        icono: 'phone',     roles: ['Telemercaderista'] },
+  { label: 'Beneficios',          ruta: '/beneficios',          icono: 'gift',      roles: ['Telemercaderista'] },
+  { label: 'Aprobar compras',     ruta: '/aprobar-compras',     icono: 'compras',   roles: ['Auxiliar Administrativo'] },
+  { label: 'Aprobar beneficios',  ruta: '/aprobar-beneficios',  icono: 'gift',      roles: ['Auxiliar Administrativo'] },
   // 'Reporte' se quita del menú: la ruta /reporte no existe aún en app.routes.ts
   // ni tiene backend implementado. Volver a agregarla cuando exista.
 ];

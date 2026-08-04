@@ -69,15 +69,35 @@ export const routes: Routes = [
       },
       {
         path: 'telemercadeo',
+        canActivate: [roleGuard],
+        data: { roles: ['Telemercaderista'] },
         loadComponent: () =>
           import('./modules/telemercadeo/telemercadeo.component')
             .then(m => m.TelemercadeoComponent)
       },
       {
         path: 'beneficios',
+        canActivate: [roleGuard],
+        data: { roles: ['Telemercaderista'] },
         loadComponent: () =>
           import('./modules/beneficios/beneficios.component')
             .then(m => m.BeneficiosComponent)
+      },
+      {
+        path: 'aprobar-compras',
+        canActivate: [roleGuard],
+        data: { roles: ['Auxiliar Administrativo'] },
+        loadComponent: () =>
+          import('./modules/aprobar-compras/aprobar-compras.component')
+            .then(m => m.AprobarComprasComponent)
+      },
+      {
+        path: 'aprobar-beneficios',
+        canActivate: [roleGuard],
+        data: { roles: ['Auxiliar Administrativo'] },
+        loadComponent: () =>
+          import('./modules/aprobar-beneficios/aprobar-beneficios.component')
+            .then(m => m.AprobarBeneficiosComponent)
       },
       {
         path: 'perfil',

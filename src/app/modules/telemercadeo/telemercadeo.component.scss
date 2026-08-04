@@ -45,6 +45,15 @@
   @include mobile { grid-template-columns: 1fr; }
 }
 
+.kpi-grid-3 {
+  display:               grid;
+  grid-template-columns: repeat(3, minmax(0, 320px));
+  gap:                   16px;
+
+  @include mobile { grid-template-columns: 1fr; }
+  @include tablet { grid-template-columns: repeat(2, minmax(0, 320px)); }
+}
+
 .kpi-card {
   background:    $card-bg;
   border-radius: $radius-lg;
@@ -70,6 +79,7 @@
 
   &-blue   { background: rgba(59,130,246,0.12); color: #3B82F6; }
   &-yellow { background: rgba(245,158,11,0.12); color: #D97706; }
+  &-red    { background: rgba(231,76,60,0.12);  color: #E74C3C; }
 }
 
 .kpi-info {
@@ -272,6 +282,8 @@
   margin:        16px;
 }
 
+.alert-error-page { margin: 0; }
+
 .tabla-baldrium {
   width:           100%;
   border-collapse: separate;
@@ -330,6 +342,14 @@
   overflow:      hidden;
   text-overflow: ellipsis;
 }
+.td-notas {
+  font-size:     12.5px;
+  color:         $text-secondary;
+  max-width:     220px;
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+}
 
 // ── User cell ──────────────────────────────────────────────────────
 .user-cell      { display: flex; align-items: center; gap: 10px; }
@@ -359,8 +379,41 @@
   &.estado-rechaza     { background: $danger-bg;  color: $danger; }
   &.estado-no-contesta { background: rgba(148,163,184,0.15); color: #64748B; }
   &.estado-reagendada  { background: $info-bg;    color: $info; }
+  &.estado-cancelada   { background: $danger-bg;  color: $danger; }
 
   &.estado-default     { background: rgba(148,163,184,0.15); color: #64748B; }
+}
+
+// ── Select estado (cambio inline) ───────────────────────────────────
+.select-estado {
+  appearance:     none;
+  -webkit-appearance: none;
+  display:        inline-flex;
+  align-items:    center;
+  padding:        5px 26px 5px 10px;
+  border-radius:  $radius-full;
+  border:         none;
+  font-family:    $font-body;
+  font-size:      10px;
+  font-weight:    700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  white-space:    nowrap;
+  cursor:         pointer;
+  outline:        none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23555770' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:   no-repeat;
+  background-position: right 8px center;
+  transition:     opacity 0.2s;
+
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  &.estado-pendiente   { background-color: $warning-bg; color: $warning; }
+  &.estado-contactado  { background-color: $info-bg;    color: $info; }
+  &.estado-no-responde { background-color: rgba(148,163,184,0.15); color: #64748B; }
+  &.estado-agendado    { background-color: $success-bg; color: $success; }
+
+  option:disabled { color: $text-muted; }
 }
 
 // ── Paginación ─────────────────────────────────────────────────────
@@ -403,6 +456,96 @@
       &:disabled { opacity: 0.35; cursor: not-allowed; }
     }
   }
+}
+
+// ── Acciones: agendar / editar / cancelar visita ────────────────────
+.acciones-wrap {
+  display: flex;
+  gap:     6px;
+}
+
+.btn-agendar {
+  padding:        7px 16px;
+  background:     $navy-800;
+  color:          $white;
+  border:         none;
+  border-radius:  $radius-sm;
+  font-size:      11px;
+  font-weight:    700;
+  letter-spacing: 0.5px;
+  cursor:         pointer;
+  transition:     background 0.2s;
+  white-space:    nowrap;
+
+  &:hover { background: $navy-600; }
+}
+
+.btn-estado {
+  padding:        7px 16px;
+  background:     transparent;
+  color:          $info;
+  border:         1.5px solid rgba(59,130,246,0.35);
+  border-radius:  $radius-sm;
+  font-size:      11px;
+  font-weight:    700;
+  letter-spacing: 0.5px;
+  cursor:         pointer;
+  transition:     all 0.2s;
+  white-space:    nowrap;
+
+  &:hover { background: $info-bg; border-color: $info; }
+}
+
+.btn-cancelar {
+  padding:        7px 16px;
+  background:     transparent;
+  color:          $danger;
+  border:         1.5px solid rgba(231,76,60,0.35);
+  border-radius:  $radius-sm;
+  font-size:      11px;
+  font-weight:    700;
+  letter-spacing: 0.5px;
+  cursor:         pointer;
+  transition:     all 0.2s;
+  white-space:    nowrap;
+
+  &:hover { background: $danger-bg; border-color: $danger; }
+}
+
+// ── Modal: variantes ─────────────────────────────────────────────────
+.modal-card-sm     { max-width: 460px; }
+.modal-icon-danger { background: rgba(231,76,60,0.10) !important; color: $danger !important; }
+
+.btn-danger-filled {
+  display:       inline-flex;
+  align-items:   center;
+  gap:           8px;
+  padding:       9px 18px;
+  background:    $danger;
+  border:        none;
+  border-radius: $radius-md;
+  color:         $white;
+  font-family:   $font-body;
+  font-size:     13px;
+  font-weight:   600;
+  cursor:        pointer;
+  transition:    all 0.2s;
+
+  &:hover:not(:disabled) {
+    background: #C0392B;
+    transform:  translateY(-1px);
+    box-shadow: 0 4px 14px rgba(231,76,60,0.40);
+  }
+
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+// ── Modal agendar: label opcional ──────────────────────────────────
+.form-label-optional {
+  font-size:   10px;
+  font-weight: 400;
+  color:       $text-muted;
+  margin-left: 4px;
 }
 
 @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }

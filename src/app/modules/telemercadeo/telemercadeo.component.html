@@ -33,6 +33,10 @@
     </button>
   </div>
 
+  <div class="alert-error-inline alert-error-page" *ngIf="errorActualizarEstado">
+    {{ errorActualizarEstado }}
+  </div>
+
   <!-- ══════════════════════════════════════════════════════════════════
        TAB: PROSPECTOS
   ══════════════════════════════════════════════════════════════════ -->
@@ -62,7 +66,7 @@
         </div>
         <div class="kpi-info">
           <span class="kpi-value">{{ enGestionFiltrados.length }}</span>
-          <span class="kpi-label">En gestión</span>
+          <span class="kpi-label">Gestionadas</span>
         </div>
       </div>
     </div>
@@ -83,22 +87,22 @@
               class="search-input"
               placeholder="Buscar por nombre, celular o dirección..."
               [(ngModel)]="busquedaPendientes"
-              (input)="paginaPendientes = 1"
+              (input)="onBuscarPendientesInput()"
             />
           </div>
         </div>
       </div>
 
-      <div class="table-loading" *ngIf="cargandoPendientes">
+      <div class="table-loading" *ngIf="cargandoPendientes || buscandoPendientes">
         <span class="spinner spinner-dark"></span>
-        Cargando prospectos...
+        {{ buscandoPendientes ? 'Buscando...' : 'Cargando prospectos...' }}
       </div>
 
-      <div class="alert-error-inline" *ngIf="errorPendientes && !cargandoPendientes">
+      <div class="alert-error-inline" *ngIf="errorPendientes && !cargandoPendientes && !buscandoPendientes">
         {{ errorPendientes }}
       </div>
 
-      <div class="table-responsive" *ngIf="!cargandoPendientes && !errorPendientes">
+      <div class="table-responsive" *ngIf="!cargandoPendientes && !buscandoPendientes && !errorPendientes">
         <table class="tabla-baldrium">
           <thead>
             <tr>
@@ -107,6 +111,7 @@
               <th>DIRECCIÓN</th>
               <th>ESTADO</th>
               <th>ÚLTIMA ACTUALIZACIÓN</th>
+              <th>ACCIÓN</th>
             </tr>
           </thead>
           <tbody>
@@ -125,14 +130,22 @@
               <td>{{ p.Celular }}</td>
               <td class="td-direccion">{{ p.Direccion }}</td>
               <td>
-                <span class="badge-estado-tele" [ngClass]="getEstadoClass(p.Estado)">
-                  {{ p.Estado }}
-                </span>
+                <select class="select-estado" [ngClass]="getEstadoClass(p.Estado)"
+                        name="estado-pend-{{ p.ID }}"
+                        [ngModel]="p.Estado"
+                        [disabled]="actualizandoEstadoId === p.ID"
+                        (ngModelChange)="cambiarEstadoProspecto(p, $event)">
+                  <option *ngIf="p.Estado === 'Agendado'" value="Agendado" disabled>Agendado</option>
+                  <option *ngFor="let e of ESTADOS_EDITABLES" [value]="e">{{ e }}</option>
+                </select>
               </td>
               <td class="td-fecha">{{ formatearRelativo(p.FechaActualizacion) }}</td>
+              <td>
+                <button class="btn-agendar" (click)="abrirAgendar(p)">Agendar visita</button>
+              </td>
             </tr>
             <tr *ngIf="pendientesPaginados.length === 0">
-              <td colspan="5" class="table-empty">No hay prospectos pendientes por gestionar</td>
+              <td colspan="6" class="table-empty">No hay prospectos pendientes por gestionar</td>
             </tr>
           </tbody>
         </table>
@@ -160,10 +173,10 @@
       </div>
     </div>
 
-    <!-- ── Tabla: En gestión ─────────────────────────────────────────── -->
+    <!-- ── Tabla: Gestionadas ────────────────────────────────────────── -->
     <div class="card-section">
       <div class="section-header">
-        <h2>En gestión</h2>
+        <h2>Gestionadas</h2>
         <div class="section-header-right">
           <div class="search-wrap">
             <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24"
@@ -176,22 +189,22 @@
               class="search-input"
               placeholder="Buscar por nombre, celular o dirección..."
               [(ngModel)]="busquedaEnGestion"
-              (input)="paginaEnGestion = 1"
+              (input)="onBuscarEnGestionInput()"
             />
           </div>
         </div>
       </div>
 
-      <div class="table-loading" *ngIf="cargandoEnGestion">
+      <div class="table-loading" *ngIf="cargandoEnGestion || buscandoEnGestion">
         <span class="spinner spinner-dark"></span>
-        Cargando prospectos...
+        {{ buscandoEnGestion ? 'Buscando...' : 'Cargando prospectos...' }}
       </div>
 
-      <div class="alert-error-inline" *ngIf="errorEnGestion && !cargandoEnGestion">
+      <div class="alert-error-inline" *ngIf="errorEnGestion && !cargandoEnGestion && !buscandoEnGestion">
         {{ errorEnGestion }}
       </div>
 
-      <div class="table-responsive" *ngIf="!cargandoEnGestion && !errorEnGestion">
+      <div class="table-responsive" *ngIf="!cargandoEnGestion && !buscandoEnGestion && !errorEnGestion">
         <table class="tabla-baldrium">
           <thead>
             <tr>
@@ -218,9 +231,14 @@
               <td>{{ p.Celular }}</td>
               <td class="td-direccion">{{ p.Direccion }}</td>
               <td>
-                <span class="badge-estado-tele" [ngClass]="getEstadoClass(p.Estado)">
-                  {{ p.Estado }}
-                </span>
+                <select class="select-estado" [ngClass]="getEstadoClass(p.Estado)"
+                        name="estado-geston-{{ p.ID }}"
+                        [ngModel]="p.Estado"
+                        [disabled]="actualizandoEstadoId === p.ID"
+                        (ngModelChange)="cambiarEstadoProspecto(p, $event)">
+                  <option *ngIf="p.Estado === 'Agendado'" value="Agendado" disabled>Agendado</option>
+                  <option *ngFor="let e of ESTADOS_EDITABLES" [value]="e">{{ e }}</option>
+                </select>
               </td>
               <td class="td-fecha">{{ formatearRelativo(p.FechaActualizacion) }}</td>
             </tr>
@@ -261,7 +279,7 @@
   <ng-container *ngIf="tabActivo === 'visitas'">
 
     <!-- ── KPIs ──────────────────────────────────────────────────────── -->
-    <div class="kpi-grid-2">
+    <div class="kpi-grid-3">
       <div class="kpi-card">
         <div class="kpi-icon kpi-icon-yellow">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -287,6 +305,20 @@
           <span class="kpi-label">Visitadas esta semana</span>
         </div>
       </div>
+      <div class="kpi-card">
+        <div class="kpi-icon kpi-icon-red">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="15" y1="9" x2="9" y2="15"/>
+            <line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-value">{{ cargandoKpiFallidas ? '—' : totalFallidas }}</span>
+          <span class="kpi-label">Fallidas (últimas 2 semanas)</span>
+        </div>
+      </div>
     </div>
 
     <!-- ── Tabla: Por gestionar (visitas) ──────────────────────────────── -->
@@ -305,22 +337,22 @@
               class="search-input"
               placeholder="Buscar por nombre, trabajador, celular o dirección..."
               [(ngModel)]="busquedaPorGestionar"
-              (input)="paginaPorGestionar = 1"
+              (input)="onBuscarPorGestionarInput()"
             />
           </div>
         </div>
       </div>
 
-      <div class="table-loading" *ngIf="cargandoPorGestionar">
+      <div class="table-loading" *ngIf="cargandoPorGestionar || buscandoPorGestionar">
         <span class="spinner spinner-dark"></span>
-        Cargando visitas...
+        {{ buscandoPorGestionar ? 'Buscando...' : 'Cargando visitas...' }}
       </div>
 
-      <div class="alert-error-inline" *ngIf="errorPorGestionar && !cargandoPorGestionar">
+      <div class="alert-error-inline" *ngIf="errorPorGestionar && !cargandoPorGestionar && !buscandoPorGestionar">
         {{ errorPorGestionar }}
       </div>
 
-      <div class="table-responsive" *ngIf="!cargandoPorGestionar && !errorPorGestionar">
+      <div class="table-responsive" *ngIf="!cargandoPorGestionar && !buscandoPorGestionar && !errorPorGestionar">
         <table class="tabla-baldrium">
           <thead>
             <tr>
@@ -332,6 +364,7 @@
               <th>FECHA VISITA</th>
               <th>ESTADO</th>
               <th>ÚLTIMA ACTUALIZACIÓN</th>
+              <th>ACCIÓN</th>
             </tr>
           </thead>
           <tbody>
@@ -365,9 +398,16 @@
                 </span>
               </td>
               <td class="td-fecha">{{ formatearRelativo(v.UltimaInteraccion) }}</td>
+              <td>
+                <div class="acciones-wrap">
+                  <button class="btn-agendar" (click)="abrirEditarVisita(v)">Editar</button>
+                  <button class="btn-estado" (click)="abrirCambiarEstadoVisita(v)">Cambiar estado</button>
+                  <button class="btn-cancelar" (click)="abrirCancelarVisita(v)">Cancelar</button>
+                </div>
+              </td>
             </tr>
             <tr *ngIf="porGestionarPaginadas.length === 0">
-              <td colspan="8" class="table-empty">No hay visitas por gestionar esta semana</td>
+              <td colspan="9" class="table-empty">No hay visitas por gestionar esta semana</td>
             </tr>
           </tbody>
         </table>
@@ -411,22 +451,22 @@
               class="search-input"
               placeholder="Buscar por nombre, trabajador, celular o dirección..."
               [(ngModel)]="busquedaVisitadas"
-              (input)="paginaVisitadas = 1"
+              (input)="onBuscarVisitadasInput()"
             />
           </div>
         </div>
       </div>
 
-      <div class="table-loading" *ngIf="cargandoVisitadas">
+      <div class="table-loading" *ngIf="cargandoVisitadas || buscandoVisitadas">
         <span class="spinner spinner-dark"></span>
-        Cargando visitas...
+        {{ buscandoVisitadas ? 'Buscando...' : 'Cargando visitas...' }}
       </div>
 
-      <div class="alert-error-inline" *ngIf="errorVisitadas && !cargandoVisitadas">
+      <div class="alert-error-inline" *ngIf="errorVisitadas && !cargandoVisitadas && !buscandoVisitadas">
         {{ errorVisitadas }}
       </div>
 
-      <div class="table-responsive" *ngIf="!cargandoVisitadas && !errorVisitadas">
+      <div class="table-responsive" *ngIf="!cargandoVisitadas && !buscandoVisitadas && !errorVisitadas">
         <table class="tabla-baldrium">
           <thead>
             <tr>
@@ -501,6 +541,405 @@
       </div>
     </div>
 
+    <!-- ── Tabla: Fallidas ──────────────────────────────────────────── -->
+    <div class="card-section">
+      <div class="section-header">
+        <h2>Fallidas</h2>
+        <div class="section-header-right">
+          <div class="search-wrap">
+            <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Buscar por nombre, celular, dirección o notas..."
+              [(ngModel)]="busquedaFallidas"
+              (input)="onBuscarFallidasInput()"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="table-loading" *ngIf="cargandoFallidas || buscandoFallidas">
+        <span class="spinner spinner-dark"></span>
+        {{ buscandoFallidas ? 'Buscando...' : 'Cargando visitas fallidas...' }}
+      </div>
+
+      <div class="alert-error-inline" *ngIf="errorFallidas && !cargandoFallidas && !buscandoFallidas">
+        {{ errorFallidas }}
+      </div>
+
+      <div class="table-responsive" *ngIf="!cargandoFallidas && !buscandoFallidas && !errorFallidas">
+        <table class="tabla-baldrium">
+          <thead>
+            <tr>
+              <th>CLIENTE / PROSPECTO</th>
+              <th>CELULAR</th>
+              <th>DIRECCIÓN</th>
+              <th>TRABAJADOR</th>
+              <th>FECHA VISITA</th>
+              <th>ESTADO</th>
+              <th>NOTAS</th>
+              <th>ÚLTIMA ACTUALIZACIÓN</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let v of fallidasPaginadas">
+              <td>
+                <div class="user-cell">
+                  <div class="avatar-initials avatar-{{ getPrimeraLetra(v.NombrePersona) }}">
+                    {{ getIniciales(v.NombrePersona) }}
+                  </div>
+                  <div class="user-cell-info">
+                    <span class="user-cell-name">{{ v.NombrePersona }}</span>
+                    <span class="user-cell-id">ID #{{ v.ID }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>{{ v.Celular }}</td>
+              <td class="td-direccion">{{ v.Direccion }}</td>
+              <td>
+                <div class="user-cell">
+                  <div class="user-cell-info">
+                    <span class="user-cell-name">{{ v.NombreTrabajador }}</span>
+                    <span class="user-cell-id">{{ v.CedulaTrabajador }}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="td-fecha">{{ formatearFechaVisita(v.FechaVisita) }}</td>
+              <td>
+                <span class="badge-estado-tele" [ngClass]="getEstadoVisitaClass(v.Estado)">
+                  {{ v.Estado }}
+                </span>
+              </td>
+              <td class="td-notas">{{ v.Notas || '—' }}</td>
+              <td class="td-fecha">{{ formatearRelativo(v.UltimaInteraccion) }}</td>
+            </tr>
+            <tr *ngIf="fallidasPaginadas.length === 0">
+              <td colspan="8" class="table-empty">No hay visitas fallidas en las últimas 2 semanas</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="paginacion" *ngIf="fallidasFiltradas.length > 0">
+          <span class="pag-info">
+            Mostrando {{ fallidasPaginadas.length }} de {{ fallidasFiltradas.length }} visitas
+          </span>
+          <div class="pag-btns">
+            <button (click)="paginaFallidas = paginaFallidas - 1" [disabled]="paginaFallidas === 1">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+            <button (click)="paginaFallidas = paginaFallidas + 1"
+                    [disabled]="paginaFallidas === totalPaginasFallidas">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </ng-container>
 
+</div>
+
+<!-- ══ MODAL Agendar visita ══════════════════════════════════════════ -->
+<div class="modal-overlay" *ngIf="mostrarModalAgendar" (click)="cerrarAgendar()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <div class="modal-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <div>
+          <h3>Agendar visita</h3>
+          <p>{{ prospectoParaAgendar?.Nombre }}</p>
+        </div>
+      </div>
+      <button class="modal-close" (click)="cerrarAgendar()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="alert-error-inline" *ngIf="errorAgendar">{{ errorAgendar }}</div>
+
+      <div class="form-grid">
+
+        <div class="form-group" [class.has-error]="intentoAgendar && !agendarNombre.trim()">
+          <label>NOMBRE</label>
+          <input type="text" [(ngModel)]="agendarNombre" placeholder="Nombre del prospecto" />
+        </div>
+
+        <div class="form-group" [class.has-error]="intentoAgendar && !agendarCelular.trim()">
+          <label>CELULAR</label>
+          <input type="text" [(ngModel)]="agendarCelular" placeholder="Celular" />
+        </div>
+
+        <div class="form-group form-grid-full" [class.has-error]="intentoAgendar && !agendarDireccion.trim()">
+          <label>DIRECCIÓN</label>
+          <input type="text" [(ngModel)]="agendarDireccion" placeholder="Dirección de la visita" />
+          <span class="field-error-msg" *ngIf="intentoAgendar && !agendarDireccion.trim()">
+            La dirección es obligatoria.
+          </span>
+        </div>
+
+        <div class="form-group form-grid-full" [class.has-error]="intentoAgendar && !agendarCedulaTrabajador">
+          <label>ASESOR QUE ASISTE</label>
+          <select [(ngModel)]="agendarCedulaTrabajador" [disabled]="cargandoAsesores">
+            <option value="">{{ cargandoAsesores ? 'Cargando asesores...' : 'Seleccione un asesor...' }}</option>
+            <option *ngFor="let a of asesores" [value]="a.cedula">{{ a.nombre }}</option>
+          </select>
+        </div>
+
+        <div class="form-group" [class.has-error]="intentoAgendar && !agendarFechaVisita">
+          <label>FECHA Y HORA DE VISITA</label>
+          <input type="datetime-local" [(ngModel)]="agendarFechaVisita" />
+        </div>
+
+        <div class="form-group" [class.has-error]="intentoAgendar && agendarCantidadPersonas <= 0">
+          <label>CANTIDAD DE PERSONAS</label>
+          <input type="number" min="1" [(ngModel)]="agendarCantidadPersonas" />
+        </div>
+
+        <div class="form-group form-grid-full">
+          <label>NOTAS <span class="form-label-optional">opcional</span></label>
+          <textarea rows="2" [(ngModel)]="agendarNotas" placeholder="Notas de la visita..."></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <div class="modal-footer-right">
+        <button class="btn btn-secondary" (click)="cerrarAgendar()">Cancelar</button>
+        <button class="btn btn-primary" (click)="guardarAgendar()" [disabled]="guardandoAgendar">
+          <span *ngIf="!guardandoAgendar">Agendar visita</span>
+          <span *ngIf="guardandoAgendar" class="spinner"></span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ MODAL Editar visita ═══════════════════════════════════════════ -->
+<div class="modal-overlay" *ngIf="mostrarModalEditarVisita" (click)="cerrarEditarVisita()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <div class="modal-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </div>
+        <div>
+          <h3>Editar visita</h3>
+          <p>{{ visitaParaEditar?.NombrePersona }}</p>
+        </div>
+      </div>
+      <button class="modal-close" (click)="cerrarEditarVisita()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="table-loading" *ngIf="cargandoDetalleEditar">
+        <span class="spinner spinner-dark"></span>
+        Cargando detalle de la visita...
+      </div>
+
+      <div class="alert-error-inline" *ngIf="errorDetalleEditar && !cargandoDetalleEditar">
+        {{ errorDetalleEditar }}
+      </div>
+
+      <ng-container *ngIf="!cargandoDetalleEditar && !errorDetalleEditar">
+        <div class="alert-error-inline" *ngIf="errorEditarVisita">{{ errorEditarVisita }}</div>
+
+        <div class="form-grid">
+
+          <div class="form-group form-grid-full" [class.has-error]="intentoEditarVisita && !editCedulaTrabajador">
+            <label>ASESOR QUE ASISTE</label>
+            <select [(ngModel)]="editCedulaTrabajador" [disabled]="cargandoAsesores">
+              <option value="">{{ cargandoAsesores ? 'Cargando asesores...' : 'Seleccione un asesor...' }}</option>
+              <option *ngFor="let a of asesores" [value]="a.cedula">{{ a.nombre }}</option>
+            </select>
+          </div>
+
+          <div class="form-group" [class.has-error]="intentoEditarVisita && !editFechaVisita">
+            <label>FECHA Y HORA DE VISITA</label>
+            <input type="datetime-local" [(ngModel)]="editFechaVisita" />
+          </div>
+
+          <div class="form-group" [class.has-error]="intentoEditarVisita && editCantidadPersonas <= 0">
+            <label>CANTIDAD DE PERSONAS</label>
+            <input type="number" min="1" [(ngModel)]="editCantidadPersonas" />
+          </div>
+
+          <div class="form-group form-grid-full" [class.has-error]="intentoEditarVisita && !editNotas.trim()">
+            <label>NOTAS</label>
+            <textarea rows="2" [(ngModel)]="editNotas" placeholder="Notas de la visita..."></textarea>
+            <span class="field-error-msg" *ngIf="intentoEditarVisita && !editNotas.trim()">
+              Las notas son obligatorias.
+            </span>
+          </div>
+
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="modal-footer">
+      <div class="modal-footer-right">
+        <button class="btn btn-secondary" (click)="cerrarEditarVisita()">Cancelar</button>
+        <button class="btn btn-primary" (click)="guardarEditarVisita()"
+                [disabled]="guardandoEditarVisita || cargandoDetalleEditar">
+          <span *ngIf="!guardandoEditarVisita">Guardar cambios</span>
+          <span *ngIf="guardandoEditarVisita" class="spinner"></span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ MODAL Cancelar visita ═══════════════════════════════════════════ -->
+<div class="modal-overlay" *ngIf="mostrarModalCancelarVisita" (click)="cerrarCancelarVisita()">
+  <div class="modal-card modal-card-sm" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <div class="modal-icon modal-icon-danger">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="15" y1="9" x2="9" y2="15"/>
+            <line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+        </div>
+        <div>
+          <h3>Cancelar agenda</h3>
+          <p>{{ visitaParaCancelar?.NombrePersona }}</p>
+        </div>
+      </div>
+      <button class="modal-close" (click)="cerrarCancelarVisita()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="alert-error-inline" *ngIf="errorCancelarVisita">{{ errorCancelarVisita }}</div>
+
+      <div class="form-group" [class.has-error]="intentoCancelarVisita && !motivoCancelar.trim()">
+        <label>MOTIVO DE LA CANCELACIÓN</label>
+        <textarea rows="3" [(ngModel)]="motivoCancelar" placeholder="Ej. Cliente ya no está interesado"></textarea>
+        <span class="field-error-msg" *ngIf="intentoCancelarVisita && !motivoCancelar.trim()">
+          El motivo es obligatorio.
+        </span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <div class="modal-footer-right">
+        <button class="btn btn-secondary" (click)="cerrarCancelarVisita()">Volver</button>
+        <button class="btn btn-danger-filled" (click)="confirmarCancelarVisita()" [disabled]="cancelandoVisita">
+          <span *ngIf="!cancelandoVisita">Cancelar agenda</span>
+          <span *ngIf="cancelandoVisita" class="spinner"></span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ MODAL Cambiar estado visita ══════════════════════════════════════ -->
+<div class="modal-overlay" *ngIf="mostrarModalEstadoVisita" (click)="cerrarCambiarEstadoVisita()">
+  <div class="modal-card modal-card-sm" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <div class="modal-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <div>
+          <h3>Cambiar estado</h3>
+          <p>{{ visitaParaEstado?.NombrePersona }}</p>
+        </div>
+      </div>
+      <button class="modal-close" (click)="cerrarCambiarEstadoVisita()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="alert-error-inline" *ngIf="errorEstadoVisita">{{ errorEstadoVisita }}</div>
+
+      <div class="form-grid">
+        <div class="form-group form-grid-full">
+          <label>NUEVO ESTADO</label>
+          <select [(ngModel)]="nuevoEstadoVisita">
+            <option *ngFor="let e of ESTADOS_VISITA_EDITABLES" [value]="e">{{ e }}</option>
+          </select>
+        </div>
+
+        <div class="form-group form-grid-full" [class.has-error]="intentoEstadoVisita && !notasEstadoVisita.trim()">
+          <label>NOTAS</label>
+          <textarea rows="3" [(ngModel)]="notasEstadoVisita" placeholder="Ej. No contestó la llamada de reagendamiento"></textarea>
+          <span class="field-error-msg" *ngIf="intentoEstadoVisita && !notasEstadoVisita.trim()">
+            Las notas son obligatorias.
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <div class="modal-footer-right">
+        <button class="btn btn-secondary" (click)="cerrarCambiarEstadoVisita()">Cancelar</button>
+        <button class="btn btn-primary" (click)="guardarCambiarEstadoVisita()" [disabled]="cambiandoEstadoVisita">
+          <span *ngIf="!cambiandoEstadoVisita">Guardar cambio</span>
+          <span *ngIf="cambiandoEstadoVisita" class="spinner"></span>
+        </button>
+      </div>
+    </div>
+
+  </div>
 </div>
