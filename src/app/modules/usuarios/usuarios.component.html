@@ -324,7 +324,18 @@
                 {{ a.Resultado }}
               </span>
             </td>
-            <td class="td-descripcion">{{ a.Descripcion }}</td>
+            <td class="td-descripcion">
+              <span class="celda-expandible"
+                    [class.expandido]="descripcionesExpandidas.has(a.ID)"
+                    [class.clickeable]="esDescripcionLarga(a.Descripcion)"
+                    (click)="esDescripcionLarga(a.Descripcion) && toggleDescripcion(a.ID)">
+                {{ a.Descripcion }}
+              </span>
+              <button type="button" class="btn-ver-mas" *ngIf="esDescripcionLarga(a.Descripcion)"
+                      (click)="toggleDescripcion(a.ID)">
+                {{ descripcionesExpandidas.has(a.ID) ? 'Ver menos' : 'Ver más' }}
+              </button>
+            </td>
             <td class="td-ip">{{ a.DireccionIP || '—' }}</td>
             <td class="td-dispositivo">
               <ng-container *ngIf="a.Dispositivo; else sinDispositivo">

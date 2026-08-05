@@ -61,6 +61,9 @@ export class InventarioComponent implements OnInit {
   filtroAudFechaDesde     = '';
   filtroAudFechaHasta     = '';
 
+  // ── Observaciones expandidas (auditoría) ────────────────────────────
+  observacionesExpandidas = new Set<number>();
+
   // ── Modal crear/editar ─────────────────────────────────────────────
   modalMode:            ModalMode    = null;
   productoSeleccionado: Producto | null = null;
@@ -493,6 +496,15 @@ export class InventarioComponent implements OnInit {
       day: '2-digit', month: '2-digit', year: '2-digit',
       hour: '2-digit', minute: '2-digit'
     });
+  }
+
+  toggleObservacion(id: number): void {
+    if (this.observacionesExpandidas.has(id)) this.observacionesExpandidas.delete(id);
+    else this.observacionesExpandidas.add(id);
+  }
+
+  esObservacionLarga(texto: string): boolean {
+    return (texto?.length ?? 0) > 40;
   }
 
   formatearPrecio(valor: number): string {

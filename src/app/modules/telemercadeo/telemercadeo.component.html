@@ -6,6 +6,16 @@
       <h1>Telemercadeo</h1>
       <p>Cola de prospectos y visitas agendadas de la semana</p>
     </div>
+    <div class="page-header-actions">
+      <button class="btn-accion-primary" (click)="abrirNuevaAgenda()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        NUEVA AGENDA
+      </button>
+    </div>
   </div>
 
   <!-- ── Tabs ─────────────────────────────────────────────────────────── -->
@@ -667,8 +677,8 @@
           </svg>
         </div>
         <div>
-          <h3>Agendar visita</h3>
-          <p>{{ prospectoParaAgendar?.Nombre }}</p>
+          <h3>{{ modoNuevaAgenda ? 'Nueva agenda' : 'Agendar visita' }}</h3>
+          <p>{{ modoNuevaAgenda ? 'Crear prospecto y agendar su primera visita' : prospectoParaAgendar?.Nombre }}</p>
         </div>
       </div>
       <button class="modal-close" (click)="cerrarAgendar()">
@@ -688,7 +698,8 @@
 
         <div class="form-group" [class.has-error]="intentoAgendar && !agendarNombre.trim()">
           <label>NOMBRE</label>
-          <input type="text" [(ngModel)]="agendarNombre" placeholder="Nombre del prospecto" />
+          <input type="text" [(ngModel)]="agendarNombre"
+                 [placeholder]="modoNuevaAgenda ? 'Nombre del nuevo prospecto' : 'Nombre del prospecto'" />
         </div>
 
         <div class="form-group" [class.has-error]="intentoAgendar && !agendarCelular.trim()">
@@ -734,7 +745,7 @@
       <div class="modal-footer-right">
         <button class="btn btn-secondary" (click)="cerrarAgendar()">Cancelar</button>
         <button class="btn btn-primary" (click)="guardarAgendar()" [disabled]="guardandoAgendar">
-          <span *ngIf="!guardandoAgendar">Agendar visita</span>
+          <span *ngIf="!guardandoAgendar">{{ modoNuevaAgenda ? 'Crear agenda' : 'Agendar visita' }}</span>
           <span *ngIf="guardandoAgendar" class="spinner"></span>
         </button>
       </div>

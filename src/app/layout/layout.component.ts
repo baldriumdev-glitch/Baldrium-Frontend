@@ -40,17 +40,6 @@ export class LayoutComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  getRolClass(rol: string): string {
-    const map: Record<string, string> = {
-      'Director':                'topbar-badge-director',
-      'Coordinador':             'topbar-badge-coordinador',
-      'Asesor comercial':        'topbar-badge-asesor',
-      'Telemercaderista':        'topbar-badge-tele',
-      'Auxiliar Administrativo': 'topbar-badge-auxiliar',
-    };
-    return map[rol] ?? 'topbar-badge-default';
-  }
-
   @HostListener('window:resize', ['$event'])
   onResize(event: any): void {
     if (event.target.innerWidth < 768) {

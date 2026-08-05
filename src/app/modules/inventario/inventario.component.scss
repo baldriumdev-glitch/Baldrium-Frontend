@@ -413,12 +413,37 @@
 .td-cantidad  { font-weight: 700; text-align: center; }
 .td-fecha     { font-size: 12px; color: $text-muted; white-space: nowrap; font-family: monospace; }
 .td-observaciones {
-  font-size:     12px;
-  color:         $text-secondary;
-  max-width:     200px;
-  white-space:   nowrap;
-  overflow:      hidden;
-  text-overflow: ellipsis;
+  font-size: 12px;
+  color:     $text-secondary;
+  max-width: 200px;
+}
+
+.celda-expandible {
+  display:        block;
+  white-space:    nowrap;
+  overflow:       hidden;
+  text-overflow:  ellipsis;
+
+  &.expandido {
+    white-space: normal;
+    word-break:  break-word;
+  }
+
+  &.clickeable { cursor: pointer; }
+}
+
+.btn-ver-mas {
+  display:     block;
+  margin-top:  4px;
+  padding:     0;
+  background:  none;
+  border:      none;
+  color:       $gold-dark;
+  font-size:   11px;
+  font-weight: 700;
+  cursor:      pointer;
+
+  &:hover { text-decoration: underline; }
 }
 
 .cantidad-positiva { color: #27AE60 !important; }

@@ -391,7 +391,21 @@
                 {{ a.Motivo }}
               </span>
             </td>
-            <td class="td-observaciones">{{ a.Observaciones || '—' }}</td>
+            <td class="td-observaciones">
+              <ng-container *ngIf="a.Observaciones; else sinObservaciones">
+                <span class="celda-expandible"
+                      [class.expandido]="observacionesExpandidas.has(a.ID)"
+                      [class.clickeable]="esObservacionLarga(a.Observaciones)"
+                      (click)="esObservacionLarga(a.Observaciones) && toggleObservacion(a.ID)">
+                  {{ a.Observaciones }}
+                </span>
+                <button type="button" class="btn-ver-mas" *ngIf="esObservacionLarga(a.Observaciones)"
+                        (click)="toggleObservacion(a.ID)">
+                  {{ observacionesExpandidas.has(a.ID) ? 'Ver menos' : 'Ver más' }}
+                </button>
+              </ng-container>
+              <ng-template #sinObservaciones>—</ng-template>
+            </td>
           </tr>
           <tr *ngIf="auditoriaPaginada.length === 0">
             <td colspan="9" class="table-empty">Sin movimientos registrados</td>

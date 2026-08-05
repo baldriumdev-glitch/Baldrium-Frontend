@@ -75,6 +75,25 @@ export interface KpiFallidas {
   TotalFallidas: number;
 }
 
+export interface NuevaAgendaDto {
+  nombre:           string;
+  celular:           string;
+  direccion:         string;
+  cedulaTrabajador:  string;
+  fechaVisita:       string;
+  cantidadPersonas:  number;
+  notas?:            string;
+}
+
+export interface NuevaAgendaResponse {
+  prospectoId: number;
+  personaId:   number;
+  visitaId:    number;
+  nombre:      string;
+  celular:     string;
+  direccion:   string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class TelemercadeoService {
 
@@ -132,6 +151,10 @@ export class TelemercadeoService {
 
   agendarVisita(prospectoId: number, dto: AgendarVisitaDto): Observable<AgendarVisitaResponse> {
     return this.http.post<AgendarVisitaResponse>(`${this.base}/prospectos/${prospectoId}/agendar-visita`, dto);
+  }
+
+  crearNuevaAgenda(dto: NuevaAgendaDto): Observable<NuevaAgendaResponse> {
+    return this.http.post<NuevaAgendaResponse>(`${this.base}/prospectos/nueva-agenda`, dto);
   }
 
   cambiarEstadoProspecto(prospectoId: number, estado: EstadoProspectoEditable): Observable<{ ok: boolean }> {

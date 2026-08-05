@@ -33,6 +33,31 @@
   p { font-size: 14px; color: #555770; font-weight: 500; margin: 0; }
 }
 
+.page-header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.btn-accion-primary {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            8px;
+  padding:        11px 22px;
+  background:     linear-gradient(135deg, $gold 0%, $gold-dark 100%);
+  border:         none;
+  border-radius:  $radius-md;
+  color:          $white;
+  font-family:    $font-display;
+  font-size:      12px;
+  font-weight:    700;
+  letter-spacing: 1px;
+  cursor:         pointer;
+  transition:     all 0.25s;
+  box-shadow:     0 4px 14px rgba(201,168,76,0.30);
+
+  &:hover {
+    transform:  translateY(-1px);
+    box-shadow: 0 6px 20px rgba(201,168,76,0.45);
+  }
+}
+
 // ════════════════════════════════════════════════════════════════════
 //  KPIs
 // ════════════════════════════════════════════════════════════════════

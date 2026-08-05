@@ -6,7 +6,7 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import {
   TelemercadeoService, Prospecto, VisitaAgendada,
   Asesor, AgendarVisitaDto, EstadoProspectoEditable, EditarVisitaDto,
-  EstadoVisitaEditable, CambiarEstadoVisitaDto
+  EstadoVisitaEditable, CambiarEstadoVisitaDto, NuevaAgendaDto
 } from './telemercadeo.service';
 
 type TabActivo = 'prospectos' | 'visitas';
@@ -88,8 +88,9 @@ export class TelemercadeoComponent implements OnInit, OnDestroy {
   totalFallidas    = 0;
   cargandoKpiFallidas = true;
 
-  // ── Modal agendar visita ───────────────────────────────────────────
+  // ── Modal agendar visita (también cubre "Nueva agenda" desde cero) ──
   mostrarModalAgendar   = false;
+  modoNuevaAgenda       = false;
   prospectoParaAgendar: Prospecto | null = null;
 
   agendarNombre           = '';
@@ -283,10 +284,28 @@ export class TelemercadeoComponent implements OnInit, OnDestroy {
   // ════════════════════════════════════════════════════════════════════
 
   abrirAgendar(p: Prospecto): void {
+    this.modoNuevaAgenda         = false;
     this.prospectoParaAgendar    = p;
     this.agendarNombre           = p.Nombre ?? '';
     this.agendarCelular          = p.Celular != null ? String(p.Celular) : '';
     this.agendarDireccion        = p.Direccion ?? '';
+    this.agendarCedulaTrabajador = '';
+    this.agendarFechaVisita      = '';
+    this.agendarCantidadPersonas = 1;
+    this.agendarNotas            = '';
+    this.errorAgendar            = '';
+    this.intentoAgendar          = false;
+    this.mostrarModalAgendar     = true;
+
+    this.cargarAsesoresSiFaltan();
+  }
+
+  abrirNuevaAgenda(): void {
+    this.modoNuevaAgenda         = true;
+    this.prospectoParaAgendar    = null;
+    this.agendarNombre           = '';
+    this.agendarCelular          = '';
+    this.agendarDireccion        = '';
     this.agendarCedulaTrabajador = '';
     this.agendarFechaVisita      = '';
     this.agendarCantidadPersonas = 1;
@@ -323,10 +342,37 @@ export class TelemercadeoComponent implements OnInit, OnDestroy {
 
   guardarAgendar(): void {
     this.intentoAgendar = true;
-    if (!this.agendarValido || !this.prospectoParaAgendar || this.guardandoAgendar) return;
+    if (!this.agendarValido || this.guardandoAgendar) return;
+    if (!this.modoNuevaAgenda && !this.prospectoParaAgendar) return;
 
     this.guardandoAgendar = true;
     this.errorAgendar     = '';
+
+    if (this.modoNuevaAgenda) {
+      const dto: NuevaAgendaDto = {
+        nombre:           this.agendarNombre.trim(),
+        celular:          this.agendarCelular.trim(),
+        direccion:        this.agendarDireccion.trim(),
+        cedulaTrabajador: this.agendarCedulaTrabajador,
+        fechaVisita:      this.formatearFechaParaBackend(this.agendarFechaVisita),
+        cantidadPersonas: this.agendarCantidadPersonas,
+        notas:            this.agendarNotas.trim() || undefined
+      };
+
+      this.svc.crearNuevaAgenda(dto).subscribe({
+        next: () => {
+          this.guardandoAgendar = false;
+          this.cerrarAgendar();
+          this.refrescarProspectos();
+          this.refrescarPorGestionar();
+        },
+        error: (err: any) => {
+          this.guardandoAgendar = false;
+          this.errorAgendar     = err?.error?.error || 'Error al crear la nueva agenda.';
+        }
+      });
+      return;
+    }
 
     const dto: AgendarVisitaDto = {
       nombre:           this.agendarNombre.trim(),
@@ -338,7 +384,7 @@ export class TelemercadeoComponent implements OnInit, OnDestroy {
       notas:            this.agendarNotas.trim() || undefined
     };
 
-    this.svc.agendarVisita(this.prospectoParaAgendar.ID, dto).subscribe({
+    this.svc.agendarVisita(this.prospectoParaAgendar!.ID, dto).subscribe({
       next: () => {
         this.guardandoAgendar = false;
         this.cerrarAgendar();

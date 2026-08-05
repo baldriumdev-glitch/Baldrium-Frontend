@@ -58,6 +58,9 @@ export class UsuariosComponent implements OnInit {
   filtroAudFechaDesde     = '';
   filtroAudFechaHasta     = '';
 
+  // ── Descripciones expandidas (auditoría) ────────────────────────────
+  descripcionesExpandidas = new Set<number>();
+
   // ── Tab ───────────────────────────────────────────────────────────
   tabActivo: TabActivo = 'usuarios';
 
@@ -508,6 +511,15 @@ export class UsuariosComponent implements OnInit {
       'Auxiliar Administrativo': 'finanzas'
     };
     return map[nombreRol] ?? 'admin';
+  }
+
+  toggleDescripcion(id: number): void {
+    if (this.descripcionesExpandidas.has(id)) this.descripcionesExpandidas.delete(id);
+    else this.descripcionesExpandidas.add(id);
+  }
+
+  esDescripcionLarga(texto: string): boolean {
+    return (texto?.length ?? 0) > 70;
   }
 
   formatearFecha(fechaHora: string): string {
