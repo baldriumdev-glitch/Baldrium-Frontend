@@ -8,10 +8,9 @@
     </div>
     <div class="page-header-actions">
       <button class="btn-accion-primary" (click)="abrirNuevaVenta()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2.5">
-          <line x1="12" y1="5" x2="12" y2="19"/>
-          <line x1="5" y1="12" x2="19" y2="12"/>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
         NUEVA VENTA
       </button>
@@ -23,8 +22,9 @@
     <div class="kpi-card">
       <div class="kpi-icon kpi-icon-blue">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
         </svg>
       </div>
       <div class="kpi-info">
@@ -35,8 +35,8 @@
     <div class="kpi-card">
       <div class="kpi-icon kpi-icon-green">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <line x1="12" y1="1" x2="12" y2="23"/>
-          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          <line x1="12" y1="1" x2="12" y2="23" />
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
         </svg>
       </div>
       <div class="kpi-info">
@@ -50,26 +50,28 @@
   <div class="tabs-wrap">
     <button class="tab-btn" [class.active]="tabActivo === 'semana'" (click)="cambiarTab('semana')">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="4" width="18" height="18" rx="2"/>
-        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-        <line x1="3" y1="10" x2="21" y2="10"/>
+        <rect x="3" y="4" width="18" height="18" rx="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
       </svg>
       Compras de la semana
       <span class="tab-count" *ngIf="!cargando">{{ comprasSemana.length }}</span>
     </button>
     <button class="tab-btn" [class.active]="tabActivo === 'mes'" (click)="cambiarTab('mes')">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="4" width="18" height="18" rx="2"/>
-        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-        <line x1="3" y1="10" x2="21" y2="10"/>
+        <rect x="3" y="4" width="18" height="18" rx="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
       </svg>
       Compras del mes
       <span class="tab-count" *ngIf="!cargando">{{ comprasMes.length }}</span>
     </button>
     <button class="tab-btn" [class.active]="tabActivo === 'buscar'" (click)="cambiarTab('buscar')">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
       </svg>
       Buscar compra
     </button>
@@ -120,21 +122,23 @@
             <td class="td-fecha">{{ formatearFecha(c.FechaCompra) }}</td>
             <td style="text-align:right" class="td-valor-green">{{ formatearPesos(+c.TotalCompra) }}</td>
             <td>
-              <span class="estado-badge-compra"
-                    [class.compra-pendiente]="c.EstadoCompra === 'Pendiente'"
-                    [class.compra-pagada]="c.EstadoCompra === 'Pagada' || c.EstadoCompra === 'Completada'"
-                    [class.compra-confirmada]="c.EstadoCompra === 'Confirmado' || c.EstadoCompra === 'Confirmada'"
-                    [class.compra-rechazada]="c.EstadoCompra === 'Rechazado' || c.EstadoCompra === 'Rechazada'">
+              <span class="estado-badge-compra" [class.compra-pendiente]="c.EstadoCompra === 'Pendiente'"
+                [class.compra-pagada]="c.EstadoCompra === 'Pagada' || c.EstadoCompra === 'Completada'"
+                [class.compra-confirmada]="c.EstadoCompra === 'Confirmado' || c.EstadoCompra === 'Confirmada'"
+                [class.compra-rechazada]="c.EstadoCompra === 'Rechazado' || c.EstadoCompra === 'Rechazada'">
                 {{ c.EstadoCompra }}
               </span>
             </td>
             <td>
               <span class="beneficio-cell" [class.con-beneficio]="c.EstadoBeneficio != null">
-                <svg *ngIf="c.EstadoBeneficio == null" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                <svg *ngIf="c.EstadoBeneficio == null" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
-                <svg *ngIf="c.EstadoBeneficio != null" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <polyline points="20 6 9 17 4 12"/>
+                <svg *ngIf="c.EstadoBeneficio != null" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
                 {{ c.EstadoBeneficio != null ? 'Con beneficio' : 'Sin beneficio' }}
               </span>
@@ -145,8 +149,9 @@
       </table>
       <div class="empty-state" *ngIf="comprasSemana.length === 0">
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
         </svg>
         <p>No hay compras registradas esta semana.</p>
       </div>
@@ -198,21 +203,23 @@
             <td class="td-fecha">{{ formatearFecha(c.FechaCompra) }}</td>
             <td style="text-align:right" class="td-valor-green">{{ formatearPesos(+c.TotalCompra) }}</td>
             <td>
-              <span class="estado-badge-compra"
-                    [class.compra-pendiente]="c.EstadoCompra === 'Pendiente'"
-                    [class.compra-pagada]="c.EstadoCompra === 'Pagada' || c.EstadoCompra === 'Completada'"
-                    [class.compra-confirmada]="c.EstadoCompra === 'Confirmado' || c.EstadoCompra === 'Confirmada'"
-                    [class.compra-rechazada]="c.EstadoCompra === 'Rechazado' || c.EstadoCompra === 'Rechazada'">
+              <span class="estado-badge-compra" [class.compra-pendiente]="c.EstadoCompra === 'Pendiente'"
+                [class.compra-pagada]="c.EstadoCompra === 'Pagada' || c.EstadoCompra === 'Completada'"
+                [class.compra-confirmada]="c.EstadoCompra === 'Confirmado' || c.EstadoCompra === 'Confirmada'"
+                [class.compra-rechazada]="c.EstadoCompra === 'Rechazado' || c.EstadoCompra === 'Rechazada'">
                 {{ c.EstadoCompra }}
               </span>
             </td>
             <td>
               <span class="beneficio-cell" [class.con-beneficio]="c.EstadoBeneficio != null">
-                <svg *ngIf="c.EstadoBeneficio == null" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                <svg *ngIf="c.EstadoBeneficio == null" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
-                <svg *ngIf="c.EstadoBeneficio != null" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <polyline points="20 6 9 17 4 12"/>
+                <svg *ngIf="c.EstadoBeneficio != null" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
                 {{ c.EstadoBeneficio != null ? 'Con beneficio' : 'Sin beneficio' }}
               </span>
@@ -223,8 +230,9 @@
       </table>
       <div class="empty-state" *ngIf="comprasMes.length === 0">
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
         </svg>
         <p>No hay compras registradas este mes.</p>
       </div>
@@ -240,18 +248,18 @@
       </h2>
       <div class="section-header-right">
         <div class="search-wrap">
-          <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24"
-               fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
           <input type="text" class="search-input"
-                 placeholder="Buscar por ID, cédula, nombre, producto, fecha o estado..."
-                 [(ngModel)]="busqueda"
-                 (input)="onBuscar()" />
+            placeholder="Buscar por ID, cédula, nombre, producto, fecha o estado..." [(ngModel)]="busqueda"
+            (input)="onBuscar()" />
           <button class="search-clear" *ngIf="busqueda" (click)="limpiarBusqueda()">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
         </div>
@@ -293,21 +301,23 @@
             <td class="td-fecha">{{ formatearFecha(c.FechaCompra) }}</td>
             <td style="text-align:right" class="td-valor-green">{{ formatearPesos(+c.TotalCompra) }}</td>
             <td>
-              <span class="estado-badge-compra"
-                    [class.compra-pendiente]="c.EstadoCompra === 'Pendiente'"
-                    [class.compra-pagada]="c.EstadoCompra === 'Pagada' || c.EstadoCompra === 'Completada'"
-                    [class.compra-confirmada]="c.EstadoCompra === 'Confirmado' || c.EstadoCompra === 'Confirmada'"
-                    [class.compra-rechazada]="c.EstadoCompra === 'Rechazado' || c.EstadoCompra === 'Rechazada'">
+              <span class="estado-badge-compra" [class.compra-pendiente]="c.EstadoCompra === 'Pendiente'"
+                [class.compra-pagada]="c.EstadoCompra === 'Pagada' || c.EstadoCompra === 'Completada'"
+                [class.compra-confirmada]="c.EstadoCompra === 'Confirmado' || c.EstadoCompra === 'Confirmada'"
+                [class.compra-rechazada]="c.EstadoCompra === 'Rechazado' || c.EstadoCompra === 'Rechazada'">
                 {{ c.EstadoCompra }}
               </span>
             </td>
             <td>
               <span class="beneficio-cell" [class.con-beneficio]="c.EstadoBeneficio != null">
-                <svg *ngIf="c.EstadoBeneficio == null" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                <svg *ngIf="c.EstadoBeneficio == null" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
-                <svg *ngIf="c.EstadoBeneficio != null" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <polyline points="20 6 9 17 4 12"/>
+                <svg *ngIf="c.EstadoBeneficio != null" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
                 {{ c.EstadoBeneficio != null ? 'Con beneficio' : 'Sin beneficio' }}
               </span>
@@ -320,20 +330,234 @@
 
     <div class="empty-state buscar-placeholder" *ngIf="!buscando && busqueda && resultadosBusqueda.length === 0">
       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
       </svg>
       <p>No hay compras registradas.</p>
     </div>
 
     <div class="buscar-hint" *ngIf="!buscando && !busqueda">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
       </svg>
       Escribe para buscar en todas tus compras.
       <span *ngIf="resultadosBusqueda.length === 0 && !buscando && busqueda === ''">
-        <br/>No hay compras registradas.
+        <br />No hay compras registradas.
       </span>
     </div>
   </div>
 
+</div>
+
+<!-- ══ MODAL Nueva venta ══════════════════════════════════════════════ -->
+<div class="modal-overlay" *ngIf="mostrarModalCompra" (click)="cerrarCompra()">
+  <div class="modal-card modal-card-xl" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <div class="modal-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+          </svg>
+        </div>
+        <div>
+          <h3>Nueva Venta</h3>
+          <p>Registra una venta directa ingresando la cédula del cliente</p>
+        </div>
+      </div>
+      <button class="modal-close" (click)="cerrarCompra()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="alert-error-inline" *ngIf="errorCompra">{{ errorCompra }}</div>
+
+      <div class="compra-form-grid">
+        <div class="form-group" [class.has-error]="intentoGuardarCompra && !compraCedula.trim()">
+          <label class="form-label">Cédula del cliente <span class="form-label-required">*</span></label>
+          <input type="text" class="form-input" placeholder="Ej: 1001234567" [(ngModel)]="compraCedula" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nombre <span class="form-label-optional">opcional si ya existe</span></label>
+          <input type="text" class="form-input" placeholder="Ej: Juan Pérez" [(ngModel)]="nombreVentaLibre" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Celular <span class="form-label-optional">opcional si ya existe</span></label>
+          <input type="text" class="form-input" placeholder="Ej: 3001234567" [(ngModel)]="celularVentaLibre" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Correo electrónico <span class="form-label-optional">opcional</span></label>
+          <input type="email" class="form-input" placeholder="correo@ejemplo.com" [(ngModel)]="compraCorreo" />
+        </div>
+        <div class="form-group form-group-full">
+          <label class="form-label">Dirección de entrega <span class="form-label-optional">opcional si ya
+              existe</span></label>
+          <input type="text" class="form-input" placeholder="Ej: Calle 10 #5-20, Bogotá"
+            [(ngModel)]="compraDireccion" />
+        </div>
+      </div>
+
+      <!-- Productos -->
+      <div class="compra-section-header">
+        <span class="compra-section-title">PRODUCTOS</span>
+        <button class="btn-anadir" (click)="toggleBuscarProducto()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Añadir producto
+        </button>
+      </div>
+
+      <div class="buscar-producto-panel" *ngIf="mostrarBuscarProducto">
+        <input type="text" class="form-input" placeholder="Buscar producto..." [(ngModel)]="busquedaProducto"
+          (input)="filtrarProductos()" />
+        <div class="buscar-producto-lista">
+          <button class="buscar-producto-item" *ngFor="let p of inventarioFiltrado" (click)="agregarProducto(p)">
+            <span class="prod-nombre">{{ p.Nombre }}</span>
+            <span class="prod-precio">{{ formatearPesos(p.Valor) }}</span>
+            <span class="prod-stock" [class.sin-stock]="p.Cantidad === 0">Stock: {{ p.Cantidad }}</span>
+          </button>
+          <div class="table-empty" *ngIf="inventarioFiltrado.length === 0">Sin productos</div>
+        </div>
+      </div>
+
+      <div class="compra-items-wrap" *ngIf="itemsCompra.length > 0">
+        <table class="tabla-baldrium tabla-compacta">
+          <thead>
+            <tr>
+              <th>PRODUCTO</th>
+              <th style="text-align:center;width:120px">CANTIDAD</th>
+              <th style="text-align:right;width:130px">PRECIO UNIT.</th>
+              <th style="text-align:right;width:130px">TOTAL</th>
+              <th style="width:40px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of itemsCompra; let i = index">
+              <td class="td-nombre">{{ item.nombre }}</td>
+              <td style="text-align:center">
+                <div class="cantidad-control cantidad-inline">
+                  <button class="btn-cantidad" (click)="ajustarCantidadItem(i, -1)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2.5">
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                  </button>
+                  <span class="cantidad-val">{{ item.cantidad }}</span>
+                  <button class="btn-cantidad" (click)="ajustarCantidadItem(i, 1)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2.5">
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+              <td style="text-align:right" class="td-valor">{{ formatearPesos(item.precio) }}</td>
+              <td style="text-align:right" class="td-valor">{{ formatearPesos(item.precio * item.cantidad) }}</td>
+              <td>
+                <button class="btn-quitar-item" (click)="quitarItem(i)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="compra-vacio" *ngIf="itemsCompra.length === 0">
+        Sin productos. Haz clic en "Añadir producto".
+      </div>
+
+      <div class="compra-total-row">
+        <span class="compra-total-label">TOTAL</span>
+        <span class="compra-total-valor">{{ formatearPesos(totalCompra) }}</span>
+      </div>
+
+      <!-- Forma de pago y notas -->
+      <div class="compra-form-grid">
+        <div class="form-group" [class.has-error]="intentoGuardarCompra && !compraFormaPago">
+          <label class="form-label">Forma de pago <span class="form-label-required">*</span></label>
+          <select class="form-select" [(ngModel)]="compraFormaPago">
+            <option value="">Seleccionar...</option>
+            <option *ngFor="let fp of FORMAS_PAGO" [value]="fp">{{ FORMAS_PAGO_LABELS[fp] }}</option>
+          </select>
+        </div>
+        <div class="form-group form-group-full">
+          <label class="form-label">Notas</label>
+          <textarea class="form-textarea" rows="2" placeholder="Observaciones opcionales..."
+            [(ngModel)]="compraNotas"></textarea>
+        </div>
+      </div>
+
+      <!-- Beneficio 4x14 -->
+      <div class="beneficio-panel">
+        <label class="beneficio-toggle">
+          <input type="checkbox" [(ngModel)]="aplicarBeneficio" />
+          <span class="beneficio-label">Aplicar Beneficio 4×14</span>
+        </label>
+        <p class="beneficio-desc">
+          Agrega mínimo 10 referidos para aplicar al beneficio. Se crearán con estado
+          <strong>Pendiente</strong> vinculados a esta compra.
+        </p>
+      </div>
+
+      <div class="referidos-panel" *ngIf="aplicarBeneficio">
+        <div class="compra-section-header">
+          <span class="compra-section-title">
+            REFERIDOS
+            <span class="referidos-contador" [class.ok]="referidos.length >= 10">
+              ({{ referidos.length }} / mín. 10)
+            </span>
+          </span>
+          <button class="btn-anadir" (click)="agregarReferido()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Añadir referido
+          </button>
+        </div>
+        <div class="referidos-vacio" *ngIf="referidos.length === 0">Sin referidos.</div>
+        <div class="referido-item" *ngFor="let r of referidos; let i = index">
+          <div class="referido-num">{{ i + 1 }}</div>
+          <input type="text" class="form-input" placeholder="Nombre *" [(ngModel)]="r.nombre" />
+          <input type="text" class="form-input" placeholder="Celular *" [(ngModel)]="r.celular" />
+          <input type="text" class="form-input" placeholder="Dirección" [(ngModel)]="r.direccion" />
+          <button class="btn-quitar-item" (click)="quitarReferido(i)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <div class="modal-footer-right">
+        <button class="btn btn-secondary" (click)="cerrarCompra()">Cancelar</button>
+        <button class="btn btn-primary" (click)="guardarCompra()" [disabled]="guardandoCompra">
+          <span *ngIf="!guardandoCompra">
+            Registrar venta
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </span>
+          <span *ngIf="guardandoCompra" class="spinner"></span>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

@@ -487,3 +487,329 @@
 
   &:active { transform: translateY(0); }
 }
+
+// ════════════════════════════════════════════════════════════════════
+//  MODAL NUEVA VENTA
+// ════════════════════════════════════════════════════════════════════
+
+.modal-card-xl {
+  max-width:  720px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.td-nombre { font-weight: 600; color: $text-primary; }
+.td-valor  { font-weight: 700; color: $text-primary; white-space: nowrap; }
+
+// ── Form group / labels ────────────────────────────────────────────
+.form-group {
+  display:        flex;
+  flex-direction: column;
+  gap:            6px;
+  margin-bottom:  16px;
+}
+
+.form-label {
+  font-size:      10px;
+  font-weight:    700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color:          $text-muted;
+  display:        block;
+  margin-bottom:  6px;
+}
+
+.form-label-required { color: $danger; margin-left: 3px; }
+
+.form-label-optional {
+  font-size:      10px;
+  font-weight:    400;
+  color:          $text-muted;
+  margin-left:    4px;
+  font-style:     italic;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.form-group-full { grid-column: 1 / -1; }
+
+.form-input,
+.form-select,
+.form-textarea {
+  width:         100%;
+  padding:       9px 12px;
+  background:    $white;
+  border:        1.5px solid $border;
+  border-radius: $radius-md;
+  font-family:   $font-body;
+  font-size:     13px;
+  color:         $text-primary;
+  outline:       none;
+  transition:    border-color 0.2s;
+
+  &:focus        { border-color: $gold; }
+  &::placeholder { color: $text-muted; }
+}
+
+.form-textarea { resize: vertical; }
+
+.form-group.has-error .form-input,
+.form-group.has-error .form-select {
+  border-color: $danger;
+}
+
+// ── Compra form grid ──────────────────────────────────────────────
+.compra-form-grid {
+  display:               grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap:                   14px;
+  margin-bottom:         20px;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+// ── Section header dentro del modal ────────────────────────────────
+.compra-section-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  margin-bottom:   10px;
+}
+
+.compra-section-title {
+  font-size:      11px;
+  font-weight:    700;
+  color:          $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+// ── Botón añadir ────────────────────────────────────────────────────
+.btn-anadir {
+  display:       inline-flex;
+  align-items:   center;
+  gap:           6px;
+  padding:       6px 14px;
+  background:    transparent;
+  border:        1.5px solid $gold;
+  border-radius: $radius-md;
+  color:         $gold-dark;
+  font-family:   $font-body;
+  font-size:     12px;
+  font-weight:   700;
+  cursor:        pointer;
+  transition:    all 0.2s;
+
+  &:hover { background: rgba(201,168,76,0.08); }
+}
+
+// ── Panel búsqueda producto ───────────────────────────────────────
+.buscar-producto-panel {
+  background:    #F8F9FC;
+  border:        1px solid $border;
+  border-radius: $radius-md;
+  padding:       12px;
+  margin-bottom: 12px;
+
+  .form-input { margin-bottom: 8px; }
+}
+
+.buscar-producto-lista {
+  max-height:     200px;
+  overflow-y:     auto;
+  display:        flex;
+  flex-direction: column;
+  gap:            4px;
+}
+
+.buscar-producto-item {
+  display:       flex;
+  align-items:   center;
+  gap:           12px;
+  padding:       8px 12px;
+  background:    $white;
+  border:        1px solid $border;
+  border-radius: $radius-sm;
+  cursor:        pointer;
+  text-align:    left;
+  transition:    all 0.15s;
+  width:         100%;
+
+  &:hover {
+    border-color: $gold;
+    background:   rgba(201,168,76,0.05);
+  }
+}
+
+.prod-nombre { flex: 1; font-size: 13px; font-weight: 600; color: $text-primary; }
+.prod-precio { font-size: 12px; font-weight: 700; color: $text-primary; white-space: nowrap; }
+.prod-stock  {
+  font-size: 11px; color: $text-muted; white-space: nowrap;
+  &.sin-stock { color: $danger; }
+}
+
+.table-empty {
+  text-align: center;
+  padding:    16px;
+  color:      $text-muted;
+  font-size:  13px;
+}
+
+// ── Items compra ──────────────────────────────────────────────────
+.compra-items-wrap {
+  margin-bottom: 8px;
+  border:        1px solid $border;
+  border-radius: $radius-md;
+  overflow:      hidden;
+}
+
+.compra-vacio {
+  text-align:    center;
+  padding:       20px;
+  color:         $text-muted;
+  font-size:     13px;
+  border:        1px dashed $border;
+  border-radius: $radius-md;
+  margin-bottom: 12px;
+}
+
+.tabla-compacta tbody tr td { padding: 10px 16px; }
+
+.cantidad-inline {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             8px;
+  justify-content: center;
+}
+
+.cantidad-val {
+  font-size:   14px;
+  font-weight: 700;
+  min-width:   24px;
+  text-align:  center;
+}
+
+.btn-cantidad {
+  width:           24px;
+  height:          24px;
+  border-radius:   50%;
+  border:          1.5px solid $border;
+  background:      $white;
+  color:           $navy-800;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  cursor:          pointer;
+  transition:      all 0.15s;
+  flex-shrink:     0;
+
+  &:hover { background: $navy-800; border-color: $navy-800; color: $white; }
+}
+
+.btn-quitar-item {
+  width:           28px;
+  height:          28px;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  background:      rgba(231,76,60,0.08);
+  border:          1.5px solid rgba(231,76,60,0.20);
+  border-radius:   $radius-sm;
+  color:           $danger;
+  cursor:          pointer;
+  transition:      all 0.15s;
+
+  &:hover {
+    background:   $danger;
+    border-color: $danger;
+    color:        $white;
+  }
+}
+
+// ── Total compra ────────────────────────────────────────────────────
+.compra-total-row {
+  display:         flex;
+  align-items:     center;
+  justify-content: flex-end;
+  gap:             20px;
+  padding:         12px 16px;
+  background:      #F8F9FC;
+  border:          1px solid $border;
+  border-radius:   $radius-md;
+  margin-bottom:   20px;
+}
+
+.compra-total-label {
+  font-size:      11px;
+  font-weight:    700;
+  color:          $text-muted;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.compra-total-valor {
+  font-family: $font-display;
+  font-size:   20px;
+  font-weight: 800;
+  color:       #27AE60;
+}
+
+// ── Beneficio 4x14 ───────────────────────────────────────────────
+.beneficio-panel {
+  padding:       14px 16px;
+  border:        1px solid $border;
+  border-radius: $radius-md;
+  background:    #F8F9FC;
+  margin-bottom: 16px;
+}
+
+.beneficio-toggle {
+  display:       flex;
+  align-items:   center;
+  gap:           10px;
+  cursor:        pointer;
+  user-select:   none;
+  margin-bottom: 6px;
+
+  input[type="checkbox"] {
+    width:        16px;
+    height:       16px;
+    cursor:       pointer;
+    accent-color: $gold;
+  }
+}
+
+.beneficio-label { font-size: 13px; font-weight: 700; color: $text-primary; }
+
+.beneficio-desc {
+  font-size:    12px;
+  color:        $text-muted;
+  margin:       0;
+  padding-left: 26px;
+  line-height:  1.5;
+}
+
+// ── Referidos ───────────────────────────────────────────────────────
+.referidos-panel  { margin-bottom: 8px; }
+.referidos-vacio  { color: $text-muted; font-size: 13px; padding: 10px 0; }
+
+.referidos-contador {
+  color:       $text-muted;
+  font-weight: 500;
+  &.ok { color: #27AE60; }
+}
+
+.referido-item {
+  display:               grid;
+  grid-template-columns: 28px 1fr 1fr 1fr 28px;
+  gap:                   8px;
+  align-items:           center;
+  margin-bottom:         8px;
+}
+
+.referido-num {
+  font-size:   11px;
+  font-weight: 700;
+  color:       $text-muted;
+  text-align:  center;
+}

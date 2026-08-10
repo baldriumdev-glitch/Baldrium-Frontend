@@ -16,7 +16,6 @@ export interface Trabajador {
   correo:           string;
   direccion:        string;
   codigoTrabajador: string;
-  tipoContrato:     string;
   activo:           boolean;
   roles:            Rol[];
   ultimaActividad?: string;
@@ -30,7 +29,6 @@ export interface CrearTrabajadorDto {
   correoElectronico: string;
   direccion:         string;
   codigoTrabajador:  string;
-  tipoContrato:      string;
   contrasena:        string;
   roles:             number[];
 }
@@ -42,8 +40,18 @@ export interface ActualizarTrabajadorDto {
   correoElectronico: string;
   direccion:         string;
   codigoTrabajador:  string;
-  tipoContrato:      string;
   roles:             number[];
+}
+
+export interface ParametrosBeneficio {
+  ValorMinimoCompra:        number;
+  MinimoReferidosVisitados: number;
+  FechaActualizacion:       string;
+}
+
+export interface ActualizarParametrosBeneficioDto {
+  valorMinimoCompra:        number;
+  minimoReferidosVisitados: number;
 }
 
 export interface AuditoriaItem {
@@ -85,7 +93,6 @@ export class UsuariosService {
       CorreoElectronico: rest.correoElectronico,
       Direccion:         rest.direccion         || null,
       CodigoTrabajador:  rest.codigoTrabajador  || null,
-      TipoContrato:      rest.tipoContrato      || null,
       Contrasena:        rest.contrasena,
       roles,
     };
@@ -102,7 +109,6 @@ export class UsuariosService {
       CorreoElectronico: rest.correoElectronico,
       Direccion:         rest.direccion         || null,
       CodigoTrabajador:  rest.codigoTrabajador  || null,
-      TipoContrato:      rest.tipoContrato      || null,
       roles,
     };
     console.log('[UsuariosService] PUT', cedula, payload);
@@ -119,5 +125,13 @@ export class UsuariosService {
 
   eliminar(cedula: string): Observable<any> {
     return this.http.delete(`${this.base}/${cedula}`);
+  }
+
+  obtenerParametrosBeneficio(): Observable<ParametrosBeneficio> {
+    return this.http.get<ParametrosBeneficio>(`${this.base}/parametros-beneficio`);
+  }
+
+  actualizarParametrosBeneficio(dto: ActualizarParametrosBeneficioDto): Observable<any> {
+    return this.http.put(`${this.base}/parametros-beneficio`, dto);
   }
 }

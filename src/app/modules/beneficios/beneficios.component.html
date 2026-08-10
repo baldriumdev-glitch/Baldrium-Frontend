@@ -1,10 +1,112 @@
-<div class="page-placeholder">
-  <div class="placeholder-loading" *ngIf="cargando">
-    <span class="spinner spinner-dark"></span>
-    Cargando...
+<div class="page-beneficios">
+
+  <!-- ── Cabecera ──────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>Beneficios</h1>
+      <p>Compras que califican para beneficio por referidos</p>
+    </div>
   </div>
 
-  <div class="placeholder-error" *ngIf="error && !cargando">{{ error }}</div>
+  <!-- ── Tabla: Compras elegibles ─────────────────────────────────── -->
+  <div class="card-section">
+    <div class="section-header">
+      <h2>Compras elegibles</h2>
+      <div class="section-header-right">
+        <div class="search-wrap">
+          <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Buscar por nombre o cédula..."
+            [(ngModel)]="busqueda"
+            (input)="paginaActual = 1"
+          />
+        </div>
+      </div>
+    </div>
 
-  <h1 *ngIf="!cargando && !error">{{ mensaje }}</h1>
+    <div class="table-loading" *ngIf="cargando">
+      <span class="spinner spinner-dark"></span>
+      Cargando compras elegibles...
+    </div>
+
+    <div class="alert-error-inline" *ngIf="error && !cargando">{{ error }}</div>
+    <div class="alert-error-inline" *ngIf="errorAccion && !cargando">{{ errorAccion }}</div>
+
+    <div class="table-responsive" *ngIf="!cargando && !error">
+      <table class="tabla-baldrium">
+        <thead>
+          <tr>
+            <th>CLIENTE</th>
+            <th>TOTAL COMPRA</th>
+            <th>FECHA COMPRA</th>
+            <th>REFERIDOS VISITADOS</th>
+            <th>BENEFICIO</th>
+            <th>ACCIÓN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of comprasPaginadas">
+            <td>
+              <div class="user-cell">
+                <div class="avatar-initials avatar-{{ getPrimeraLetra(c.NombreCliente) }}">
+                  {{ getIniciales(c.NombreCliente) }}
+                </div>
+                <div class="user-cell-info">
+                  <span class="user-cell-name">{{ c.NombreCliente }}</span>
+                  <span class="user-cell-id">{{ c.CedulaCliente }}</span>
+                </div>
+              </div>
+            </td>
+            <td class="td-valor">{{ formatearPesos(c.TotalCompra) }}</td>
+            <td class="td-fecha">{{ formatearFecha(c.FechaCompra) }}</td>
+            <td class="td-center">{{ c.ReferidosVisitados }} / {{ c.TotalReferidos }}</td>
+            <td>
+              <span class="badge-beneficio" [ngClass]="getEstadoBeneficioClass(c.BeneficioActual)">
+                {{ c.BeneficioActual || 'Sin beneficio' }}
+              </span>
+            </td>
+            <td>
+              <button class="btn-crear-beneficio" *ngIf="puedeCrearBeneficio(c)"
+                      [disabled]="procesandoId === c.ID"
+                      (click)="crearBeneficio(c)">
+                <span *ngIf="procesandoId !== c.ID">Crear beneficio</span>
+                <span *ngIf="procesandoId === c.ID" class="spinner"></span>
+              </button>
+              <span class="td-muted" *ngIf="!puedeCrearBeneficio(c)">—</span>
+            </td>
+          </tr>
+          <tr *ngIf="comprasPaginadas.length === 0">
+            <td colspan="6" class="table-empty">No hay compras elegibles por ahora</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="paginacion" *ngIf="comprasFiltradas.length > 0">
+        <span class="pag-info">
+          Mostrando {{ comprasPaginadas.length }} de {{ comprasFiltradas.length }} compras
+        </span>
+        <div class="pag-btns">
+          <button (click)="paginaActual = paginaActual - 1" [disabled]="paginaActual === 1">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+          <button (click)="paginaActual = paginaActual + 1" [disabled]="paginaActual === totalPaginas">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

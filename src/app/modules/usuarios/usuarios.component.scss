@@ -152,6 +152,48 @@
   flex-wrap:   wrap;
 }
 
+// ── Parámetros de beneficios ────────────────────────────────────────
+.parametros-body {
+  padding:  24px;
+  max-width: 640px;
+}
+
+.parametros-nota {
+  display:       flex;
+  align-items:   flex-start;
+  gap:           10px;
+  background:    rgba(201,168,76,0.08);
+  border:        1px solid rgba(201,168,76,0.25);
+  border-radius: $radius-md;
+  padding:       12px 14px;
+  font-size:     12.5px;
+  color:         $gold-dark;
+  margin-bottom: 20px;
+
+  svg { flex-shrink: 0; margin-top: 1px; color: $gold; }
+}
+
+.alert-exito-inline {
+  background:    $success-bg;
+  border:        1px solid rgba(39,174,96,0.25);
+  border-radius: $radius-md;
+  padding:       10px 16px;
+  font-size:     13px;
+  color:         $success;
+  margin-bottom: 16px;
+}
+
+.parametros-actualizado {
+  font-size:  12px;
+  color:      $text-muted;
+  margin:     4px 0 20px;
+}
+
+.parametros-actions {
+  display:         flex;
+  justify-content: flex-end;
+}
+
 // ── Search ────────────────────────────────────────────────────────
 .search-wrap {
   position:    relative;

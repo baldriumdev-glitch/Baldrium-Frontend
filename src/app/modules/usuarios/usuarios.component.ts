@@ -6,11 +6,12 @@ import {
 } from '@angular/forms';
 import {
   UsuariosService, Trabajador, Rol,
-  CrearTrabajadorDto, ActualizarTrabajadorDto
+  CrearTrabajadorDto, ActualizarTrabajadorDto,
+  ParametrosBeneficio
 } from './usuarios.service';
 
 type ModalMode = 'crear' | 'editar' | null;
-type TabActivo = 'usuarios' | 'auditoria';
+type TabActivo = 'usuarios' | 'auditoria' | 'parametros';
 
 @Component({
   selector:    'app-usuarios',
@@ -64,6 +65,18 @@ export class UsuariosComponent implements OnInit {
   // ── Tab ───────────────────────────────────────────────────────────
   tabActivo: TabActivo = 'usuarios';
 
+  // ── Parámetros de beneficios ─────────────────────────────────────
+  parametrosBeneficio:     ParametrosBeneficio | null = null;
+  cargandoParametros       = true;
+  errorParametros          = '';
+
+  paramValorMinimoCompra   = 0;
+  paramMinimoReferidos     = 0;
+
+  guardandoParametros      = false;
+  errorGuardarParametros   = '';
+  exitoGuardarParametros   = false;
+
   // ── Modal crear/editar ─────────────────────────────────────────────
   modalMode:               ModalMode    = null;
   trabajadorSeleccionado:  Trabajador | null = null;
@@ -110,6 +123,47 @@ export class UsuariosComponent implements OnInit {
     this.svc.listarAuditoria().subscribe({
       next:  (a) => this.auditoria = a,
       error: ()  => {}
+    });
+
+    this.cargarParametrosBeneficio();
+  }
+
+  cargarParametrosBeneficio(): void {
+    this.cargandoParametros = true;
+    this.errorParametros    = '';
+    this.svc.obtenerParametrosBeneficio().subscribe({
+      next: p => {
+        this.parametrosBeneficio     = p;
+        this.paramValorMinimoCompra  = p.ValorMinimoCompra;
+        this.paramMinimoReferidos    = p.MinimoReferidosVisitados;
+        this.cargandoParametros      = false;
+      },
+      error: (err: any) => {
+        this.cargandoParametros = false;
+        this.errorParametros    = err?.error?.error || 'Error al cargar los parámetros de beneficios.';
+      }
+    });
+  }
+
+  guardarParametrosBeneficio(): void {
+    if (this.guardandoParametros) return;
+    this.guardandoParametros    = true;
+    this.errorGuardarParametros = '';
+    this.exitoGuardarParametros = false;
+
+    this.svc.actualizarParametrosBeneficio({
+      valorMinimoCompra:        this.paramValorMinimoCompra,
+      minimoReferidosVisitados: this.paramMinimoReferidos
+    }).subscribe({
+      next: () => {
+        this.guardandoParametros    = false;
+        this.exitoGuardarParametros = true;
+        this.cargarParametrosBeneficio();
+      },
+      error: (err: any) => {
+        this.guardandoParametros    = false;
+        this.errorGuardarParametros = err?.error?.error || 'Error al guardar los parámetros.';
+      }
     });
   }
 
@@ -292,7 +346,6 @@ export class UsuariosComponent implements OnInit {
       telefono:          [''],
       codigoTrabajador:  [''],
       direccion:         [''],
-      tipoContrato:      ['Indefinido'],
       contrasena:        ['', [Validators.required, Validators.minLength(6)]]
     });
   }
@@ -310,8 +363,7 @@ export class UsuariosComponent implements OnInit {
       celular:           [t.celular, Validators.required],
       telefono:          [t.telefono],
       codigoTrabajador:  [t.codigoTrabajador],
-      direccion:         [t.direccion],
-      tipoContrato:      [t.tipoContrato || 'Indefinido']
+      direccion:         [t.direccion]
     });
   }
 

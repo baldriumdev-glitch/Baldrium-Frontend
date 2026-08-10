@@ -39,6 +39,13 @@
       Auditoría
       <span class="tab-count" *ngIf="auditoria.length > 0">{{ auditoriaFiltrada.length }}</span>
     </button>
+    <button class="tab-btn" [class.active]="tabActivo === 'parametros'" (click)="cambiarTab('parametros')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+      Beneficios
+    </button>
   </div>
 
   <!-- ── Tabla usuarios ──────────────────────────────────────────────── -->
@@ -382,6 +389,67 @@
     </div>
   </div>
 
+  <!-- ── Parámetros de beneficios ─────────────────────────────────────── -->
+  <div class="card-section" *ngIf="tabActivo === 'parametros'">
+    <div class="section-header">
+      <h2>Parámetros de Beneficios</h2>
+    </div>
+
+    <div class="parametros-body">
+
+      <div class="table-loading" *ngIf="cargandoParametros">
+        <span class="spinner spinner-dark"></span>
+        Cargando parámetros...
+      </div>
+
+      <div class="alert-error-inline" *ngIf="errorParametros && !cargandoParametros">
+        {{ errorParametros }}
+      </div>
+
+      <ng-container *ngIf="!cargandoParametros && !errorParametros">
+
+        <div class="parametros-nota">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          Estos valores definen qué compras califican para que Telemercadeo pueda crear un beneficio.
+          Un valor en <strong>0</strong> significa sin restricción.
+        </div>
+
+        <div class="alert-error-inline" *ngIf="errorGuardarParametros">{{ errorGuardarParametros }}</div>
+        <div class="alert-exito-inline" *ngIf="exitoGuardarParametros">Parámetros actualizados correctamente.</div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>VALOR MÍNIMO DE COMPRA ($)</label>
+            <input type="number" min="0" [(ngModel)]="paramValorMinimoCompra"
+                   (ngModelChange)="exitoGuardarParametros = false" />
+          </div>
+          <div class="form-group">
+            <label>MÍNIMO DE REFERIDOS VISITADOS</label>
+            <input type="number" min="0" [(ngModel)]="paramMinimoReferidos"
+                   (ngModelChange)="exitoGuardarParametros = false" />
+          </div>
+        </div>
+
+        <p class="parametros-actualizado" *ngIf="parametrosBeneficio?.FechaActualizacion">
+          Última actualización: {{ formatearFecha(parametrosBeneficio!.FechaActualizacion) }}
+        </p>
+
+        <div class="parametros-actions">
+          <button class="btn btn-primary" (click)="guardarParametrosBeneficio()" [disabled]="guardandoParametros">
+            <span *ngIf="!guardandoParametros">Guardar cambios</span>
+            <span *ngIf="guardandoParametros" class="spinner"></span>
+          </button>
+        </div>
+
+      </ng-container>
+    </div>
+  </div>
+
 </div>
 
 <!-- MODAL Crear / Editar -->
@@ -474,15 +542,6 @@
           <label>CÓDIGO TRABAJADOR</label>
           <input type="text" formControlName="codigoTrabajador"
                  placeholder="BAL-001" />
-        </div>
-
-        <div class="form-group">
-          <label>TIPO CONTRATO</label>
-          <select formControlName="tipoContrato">
-            <option value="Indefinido">Indefinido</option>
-            <option value="Fijo">Fijo</option>
-            <option value="Prestación de Servicios">Prestación de Servicios</option>
-          </select>
         </div>
 
         <div class="form-group form-grid-full">
