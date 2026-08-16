@@ -44,14 +44,16 @@ export interface ActualizarTrabajadorDto {
 }
 
 export interface ParametrosBeneficio {
-  ValorMinimoCompra:        number;
-  MinimoReferidosVisitados: number;
-  FechaActualizacion:       string;
+  ValorMinimoCompra:         string | number;
+  MinimoReferidosVisitados:  number;
+  ValorMinimoCompraReferido: string | number;
+  FechaActualizacion:        string;
 }
 
 export interface ActualizarParametrosBeneficioDto {
   valorMinimoCompra:        number;
   minimoReferidosVisitados: number;
+  valorMinimoCompraReferido: number;
 }
 
 export interface AuditoriaItem {

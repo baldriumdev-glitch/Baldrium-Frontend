@@ -116,7 +116,7 @@ export interface CrearClienteDto {
 export interface CambiarEstadoDto {
   visitaId:     number;
   estado:       string;
-  suplementos?: { productoId: number; cantidad: number }[];
+  suplementos?: { inventarioId: number; cantidad: number }[];
   notas?:       string | null;
 }
 

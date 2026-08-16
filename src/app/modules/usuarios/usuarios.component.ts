@@ -70,8 +70,9 @@ export class UsuariosComponent implements OnInit {
   cargandoParametros       = true;
   errorParametros          = '';
 
-  paramValorMinimoCompra   = 0;
-  paramMinimoReferidos     = 0;
+  paramValorMinimoCompra         = 0;
+  paramMinimoReferidos           = 0;
+  paramValorMinimoCompraReferido = 0;
 
   guardandoParametros      = false;
   errorGuardarParametros   = '';
@@ -133,10 +134,11 @@ export class UsuariosComponent implements OnInit {
     this.errorParametros    = '';
     this.svc.obtenerParametrosBeneficio().subscribe({
       next: p => {
-        this.parametrosBeneficio     = p;
-        this.paramValorMinimoCompra  = p.ValorMinimoCompra;
-        this.paramMinimoReferidos    = p.MinimoReferidosVisitados;
-        this.cargandoParametros      = false;
+        this.parametrosBeneficio            = p;
+        this.paramValorMinimoCompra         = Number(p.ValorMinimoCompra);
+        this.paramMinimoReferidos           = p.MinimoReferidosVisitados;
+        this.paramValorMinimoCompraReferido = Number(p.ValorMinimoCompraReferido);
+        this.cargandoParametros             = false;
       },
       error: (err: any) => {
         this.cargandoParametros = false;
@@ -152,8 +154,9 @@ export class UsuariosComponent implements OnInit {
     this.exitoGuardarParametros = false;
 
     this.svc.actualizarParametrosBeneficio({
-      valorMinimoCompra:        this.paramValorMinimoCompra,
-      minimoReferidosVisitados: this.paramMinimoReferidos
+      valorMinimoCompra:         this.paramValorMinimoCompra,
+      minimoReferidosVisitados:  this.paramMinimoReferidos,
+      valorMinimoCompraReferido: this.paramValorMinimoCompraReferido
     }).subscribe({
       next: () => {
         this.guardandoParametros    = false;

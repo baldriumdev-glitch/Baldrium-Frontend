@@ -27,6 +27,17 @@ export interface CrearBeneficioResponse {
   estado:      string;
 }
 
+export type EstadoReferido = 'Visitado' | 'Pendiente' | 'Contactado' | 'No responde' | 'Agendado';
+
+export interface ReferidoCompra {
+  ID:        number;
+  Nombre:    string;
+  Celular:   number | string;
+  Direccion: string;
+  Estado:    EstadoReferido;
+  Compro:    boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class BeneficiosService {
 
@@ -40,5 +51,9 @@ export class BeneficiosService {
 
   crear(dto: CrearBeneficioDto): Observable<CrearBeneficioResponse> {
     return this.http.post<CrearBeneficioResponse>(this.base, dto);
+  }
+
+  referidosDeCompra(compraId: number): Observable<ReferidoCompra[]> {
+    return this.http.get<ReferidoCompra[]>(`${this.base}/compras/${compraId}/referidos`);
   }
 }

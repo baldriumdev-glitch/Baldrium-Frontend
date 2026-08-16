@@ -225,8 +225,61 @@
   &.estado-aceptado      { background: $success-bg; color: $success; }
   &.estado-rechazado     { background: $danger-bg;  color: $danger; }
   &.estado-sin-beneficio { background: rgba(148,163,184,0.15); color: #64748B; }
+
+  // ── Estados del referido (modal "Referidos de la compra") ──
+  &.estado-pendiente     { background: $warning-bg; color: $warning; }
+  &.estado-no-responde   { background: rgba(148,163,184,0.15); color: #64748B; }
+  &.estado-contactado    { background: $info-bg;    color: $info; }
+  &.estado-agendado      { background: $success-bg; color: $success; }
+  &.estado-visitado      { background: $success-bg; color: $success; }
+
   &.estado-default       { background: rgba(148,163,184,0.15); color: #64748B; }
 }
+
+// ── Botón ver referidos ───────────────────────────────────────────────
+.btn-ver-referidos {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            5px;
+  padding:        4px 10px;
+  background:     rgba(59,130,246,0.08);
+  border:         1px solid rgba(59,130,246,0.20);
+  border-radius:  $radius-full;
+  font-size:      12.5px;
+  font-weight:    700;
+  color:          $info;
+  cursor:         pointer;
+  transition:     all 0.2s;
+  white-space:    nowrap;
+
+  &:hover { background: rgba(59,130,246,0.16); border-color: rgba(59,130,246,0.35); }
+}
+
+// ── Flag "Compró" ──────────────────────────────────────────────────────
+.compro-flag {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            5px;
+  font-size:      12.5px;
+  font-weight:    700;
+
+  &.si { color: $success; }
+  &.no { color: $text-muted; }
+}
+
+// ── Celda dirección (modal referidos) ──────────────────────────────────
+.td-direccion {
+  font-size:     13px;
+  color:         $text-secondary;
+  max-width:     220px;
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+}
+
+// ── Modal: variantes ───────────────────────────────────────────────────
+.modal-card-lg    { max-width: 820px; }
+.modal-body-flush { padding: 0; }
 
 // ── Acción: crear beneficio ─────────────────────────────────────────
 .btn-crear-beneficio {

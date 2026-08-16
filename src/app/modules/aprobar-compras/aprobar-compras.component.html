@@ -1,10 +1,414 @@
-<div class="page-placeholder">
-  <div class="placeholder-loading" *ngIf="cargando">
-    <span class="spinner spinner-dark"></span>
-    Cargando...
+<div class="page-aprobar-compras">
+
+  <!-- ── Cabecera ──────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>Aprobar compras</h1>
+      <p>Compras pendientes de revisión y resueltas recientemente</p>
+    </div>
   </div>
 
-  <div class="placeholder-error" *ngIf="error && !cargando">{{ error }}</div>
+  <!-- ── Filtro de ventana (días) ─────────────────────────────────── -->
+  <div class="filtro-mes">
+    <div class="filtro-group">
+      <label>VENTANA (DÍAS)</label>
+      <input type="number" min="1" [(ngModel)]="filtroDias" />
+    </div>
+    <button class="btn-filtro-mes" (click)="aplicarFiltroDias()">Ver</button>
+  </div>
 
-  <h1 *ngIf="!cargando && !error">{{ mensaje }}</h1>
+  <!-- ── Tabs ─────────────────────────────────────────────────────────── -->
+  <div class="tabs-wrap">
+    <button class="tab-btn" [class.active]="tabActivo === 'pendientes'" (click)="cambiarTab('pendientes')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+      Pendientes
+      <span class="tab-count" *ngIf="!cargandoPendientes">{{ pendientesFiltradas.length }}</span>
+    </button>
+    <button class="tab-btn" [class.active]="tabActivo === 'aprobadas'" (click)="cambiarTab('aprobadas')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      Aprobadas
+      <span class="tab-count" *ngIf="!cargandoAprobadas">{{ aprobadasFiltradas.length }}</span>
+    </button>
+    <button class="tab-btn" [class.active]="tabActivo === 'rechazadas'" (click)="cambiarTab('rechazadas')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+      Rechazadas
+      <span class="tab-count" *ngIf="!cargandoRechazadas">{{ rechazadasFiltradas.length }}</span>
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       TAB: PENDIENTES
+  ══════════════════════════════════════════════════════════════════ -->
+  <div class="card-section" *ngIf="tabActivo === 'pendientes'">
+    <div class="section-header">
+      <h2>Pendientes</h2>
+      <div class="section-header-right">
+        <div class="search-wrap">
+          <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Buscar por ID, cliente, trabajador, fecha, notas o producto..."
+            [(ngModel)]="busquedaPendientes"
+            (input)="onBuscarPendientesInput()"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="table-loading" *ngIf="cargandoPendientes || buscandoPendientes">
+      <span class="spinner spinner-dark"></span>
+      {{ buscandoPendientes ? 'Buscando...' : 'Cargando compras...' }}
+    </div>
+
+    <div class="alert-error-inline" *ngIf="errorPendientes && !cargandoPendientes && !buscandoPendientes">
+      {{ errorPendientes }}
+    </div>
+
+    <div class="table-responsive" *ngIf="!cargandoPendientes && !buscandoPendientes && !errorPendientes">
+      <table class="tabla-baldrium">
+        <thead>
+          <tr>
+            <th>CLIENTE</th>
+            <th>TRABAJADOR</th>
+            <th>PRODUCTOS</th>
+            <th>TOTAL</th>
+            <th>FECHA COMPRA</th>
+            <th>FORMA DE PAGO</th>
+            <th>ACCIÓN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of pendientesPaginadas">
+            <td>
+              <div class="user-cell">
+                <div class="avatar-initials avatar-{{ getPrimeraLetra(c.NombreCliente) }}">
+                  {{ getIniciales(c.NombreCliente) }}
+                </div>
+                <div class="user-cell-info">
+                  <span class="user-cell-name">{{ c.NombreCliente }}</span>
+                  <span class="user-cell-id">{{ c.CedulaCliente }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="user-cell-info">
+                <span class="user-cell-name">{{ c.NombreTrabajador }}</span>
+                <span class="user-cell-id">{{ c.CedulaTrabajador }}</span>
+              </div>
+            </td>
+            <td class="td-productos">{{ c.Productos || '—' }}</td>
+            <td class="td-valor">{{ formatearPesos(c.TotalCompra) }}</td>
+            <td class="td-fecha">{{ formatearFecha(c.FechaCompra) }}</td>
+            <td class="td-muted">{{ c.FormaPago }}</td>
+            <td>
+              <div class="acciones-wrap">
+                <button class="btn-aceptar" (click)="abrirResolucion(c, 'Confirmado')">Aprobar</button>
+                <button class="btn-rechazar" (click)="abrirResolucion(c, 'Rechazado')">Rechazar</button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="pendientesPaginadas.length === 0">
+            <td colspan="7" class="table-empty">No hay compras pendientes en este período</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="paginacion" *ngIf="pendientesFiltradas.length > 0">
+        <span class="pag-info">
+          Mostrando {{ pendientesPaginadas.length }} de {{ pendientesFiltradas.length }} compras
+        </span>
+        <div class="pag-btns">
+          <button (click)="paginaPendientes = paginaPendientes - 1" [disabled]="paginaPendientes === 1">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+          <button (click)="paginaPendientes = paginaPendientes + 1" [disabled]="paginaPendientes === totalPaginasPendientes">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       TAB: APROBADAS
+  ══════════════════════════════════════════════════════════════════ -->
+  <div class="card-section" *ngIf="tabActivo === 'aprobadas'">
+    <div class="section-header">
+      <h2>Aprobadas</h2>
+      <div class="section-header-right">
+        <div class="search-wrap">
+          <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Buscar por ID, cliente, trabajador, fecha, notas o producto..."
+            [(ngModel)]="busquedaAprobadas"
+            (input)="onBuscarAprobadasInput()"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="table-loading" *ngIf="cargandoAprobadas || buscandoAprobadas">
+      <span class="spinner spinner-dark"></span>
+      {{ buscandoAprobadas ? 'Buscando...' : 'Cargando compras...' }}
+    </div>
+
+    <div class="alert-error-inline" *ngIf="errorAprobadas && !cargandoAprobadas && !buscandoAprobadas">
+      {{ errorAprobadas }}
+    </div>
+
+    <div class="table-responsive" *ngIf="!cargandoAprobadas && !buscandoAprobadas && !errorAprobadas">
+      <table class="tabla-baldrium">
+        <thead>
+          <tr>
+            <th>CLIENTE</th>
+            <th>TRABAJADOR</th>
+            <th>PRODUCTOS</th>
+            <th>TOTAL</th>
+            <th>FECHA COMPRA</th>
+            <th>ESTADO</th>
+            <th>MOTIVO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of aprobadasPaginadas">
+            <td>
+              <div class="user-cell">
+                <div class="avatar-initials avatar-{{ getPrimeraLetra(c.NombreCliente) }}">
+                  {{ getIniciales(c.NombreCliente) }}
+                </div>
+                <div class="user-cell-info">
+                  <span class="user-cell-name">{{ c.NombreCliente }}</span>
+                  <span class="user-cell-id">{{ c.CedulaCliente }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="user-cell-info">
+                <span class="user-cell-name">{{ c.NombreTrabajador }}</span>
+                <span class="user-cell-id">{{ c.CedulaTrabajador }}</span>
+              </div>
+            </td>
+            <td class="td-productos">{{ c.Productos || '—' }}</td>
+            <td class="td-valor">{{ formatearPesos(c.TotalCompra) }}</td>
+            <td class="td-fecha">{{ formatearFecha(c.FechaCompra) }}</td>
+            <td>
+              <span class="badge-beneficio" [ngClass]="getEstadoCompraClass(c.EstadoCompra)">{{ c.EstadoCompra }}</span>
+            </td>
+            <td class="td-motivo">{{ c.MotivoResolucion }}</td>
+          </tr>
+          <tr *ngIf="aprobadasPaginadas.length === 0">
+            <td colspan="7" class="table-empty">No hay compras aprobadas en este período</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="paginacion" *ngIf="aprobadasFiltradas.length > 0">
+        <span class="pag-info">
+          Mostrando {{ aprobadasPaginadas.length }} de {{ aprobadasFiltradas.length }} compras
+        </span>
+        <div class="pag-btns">
+          <button (click)="paginaAprobadas = paginaAprobadas - 1" [disabled]="paginaAprobadas === 1">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+          <button (click)="paginaAprobadas = paginaAprobadas + 1" [disabled]="paginaAprobadas === totalPaginasAprobadas">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       TAB: RECHAZADAS
+  ══════════════════════════════════════════════════════════════════ -->
+  <div class="card-section" *ngIf="tabActivo === 'rechazadas'">
+    <div class="section-header">
+      <h2>Rechazadas</h2>
+      <div class="section-header-right">
+        <div class="search-wrap">
+          <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Buscar por ID, cliente, trabajador, fecha, notas o producto..."
+            [(ngModel)]="busquedaRechazadas"
+            (input)="onBuscarRechazadasInput()"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="table-loading" *ngIf="cargandoRechazadas || buscandoRechazadas">
+      <span class="spinner spinner-dark"></span>
+      {{ buscandoRechazadas ? 'Buscando...' : 'Cargando compras...' }}
+    </div>
+
+    <div class="alert-error-inline" *ngIf="errorRechazadas && !cargandoRechazadas && !buscandoRechazadas">
+      {{ errorRechazadas }}
+    </div>
+
+    <div class="table-responsive" *ngIf="!cargandoRechazadas && !buscandoRechazadas && !errorRechazadas">
+      <table class="tabla-baldrium">
+        <thead>
+          <tr>
+            <th>CLIENTE</th>
+            <th>TRABAJADOR</th>
+            <th>PRODUCTOS</th>
+            <th>TOTAL</th>
+            <th>FECHA COMPRA</th>
+            <th>ESTADO</th>
+            <th>MOTIVO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of rechazadasPaginadas">
+            <td>
+              <div class="user-cell">
+                <div class="avatar-initials avatar-{{ getPrimeraLetra(c.NombreCliente) }}">
+                  {{ getIniciales(c.NombreCliente) }}
+                </div>
+                <div class="user-cell-info">
+                  <span class="user-cell-name">{{ c.NombreCliente }}</span>
+                  <span class="user-cell-id">{{ c.CedulaCliente }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="user-cell-info">
+                <span class="user-cell-name">{{ c.NombreTrabajador }}</span>
+                <span class="user-cell-id">{{ c.CedulaTrabajador }}</span>
+              </div>
+            </td>
+            <td class="td-productos">{{ c.Productos || '—' }}</td>
+            <td class="td-valor">{{ formatearPesos(c.TotalCompra) }}</td>
+            <td class="td-fecha">{{ formatearFecha(c.FechaCompra) }}</td>
+            <td>
+              <span class="badge-beneficio" [ngClass]="getEstadoCompraClass(c.EstadoCompra)">{{ c.EstadoCompra }}</span>
+            </td>
+            <td class="td-motivo">{{ c.MotivoResolucion }}</td>
+          </tr>
+          <tr *ngIf="rechazadasPaginadas.length === 0">
+            <td colspan="7" class="table-empty">No hay compras rechazadas en este período</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="paginacion" *ngIf="rechazadasFiltradas.length > 0">
+        <span class="pag-info">
+          Mostrando {{ rechazadasPaginadas.length }} de {{ rechazadasFiltradas.length }} compras
+        </span>
+        <div class="pag-btns">
+          <button (click)="paginaRechazadas = paginaRechazadas - 1" [disabled]="paginaRechazadas === 1">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+          <button (click)="paginaRechazadas = paginaRechazadas + 1" [disabled]="paginaRechazadas === totalPaginasRechazadas">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ MODAL Resolver compra (aprobar / rechazar) ═══════════════════════ -->
+<div class="modal-overlay" *ngIf="mostrarModalResolucion" (click)="cerrarResolucion()">
+  <div class="modal-card modal-card-sm" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <div class="modal-icon" [class.modal-icon-danger]="decisionActual === 'Rechazado'">
+          <svg *ngIf="decisionActual === 'Confirmado'" width="18" height="18" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <svg *ngIf="decisionActual === 'Rechazado'" width="18" height="18" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </div>
+        <div>
+          <h3>{{ decisionActual === 'Confirmado' ? 'Aprobar compra' : 'Rechazar compra' }}</h3>
+          <p>{{ compraParaResolver?.NombreCliente }}</p>
+        </div>
+      </div>
+      <button class="modal-close" (click)="cerrarResolucion()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="alert-error-inline" *ngIf="errorModal">{{ errorModal }}</div>
+
+      <div class="form-group" [class.has-error]="intentoGuardar && !motivoResolucion.trim()">
+        <label>MOTIVO</label>
+        <textarea rows="3" [(ngModel)]="motivoResolucion"
+                   [placeholder]="decisionActual === 'Confirmado' ? 'Ej. Pago verificado en banco' : 'Ej. No se pudo confirmar el pago'"></textarea>
+        <span class="field-error-msg" *ngIf="intentoGuardar && !motivoResolucion.trim()">
+          El motivo es obligatorio.
+        </span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <div class="modal-footer-right">
+        <button class="btn btn-secondary" (click)="cerrarResolucion()">Cancelar</button>
+        <button class="btn btn-primary" *ngIf="decisionActual === 'Confirmado'"
+                (click)="confirmarResolucion()" [disabled]="guardandoResolucion">
+          <span *ngIf="!guardandoResolucion">Aprobar compra</span>
+          <span *ngIf="guardandoResolucion" class="spinner"></span>
+        </button>
+        <button class="btn btn-danger-filled" *ngIf="decisionActual === 'Rechazado'"
+                (click)="confirmarResolucion()" [disabled]="guardandoResolucion">
+          <span *ngIf="!guardandoResolucion">Rechazar compra</span>
+          <span *ngIf="guardandoResolucion" class="spinner"></span>
+        </button>
+      </div>
+    </div>
+
+  </div>
 </div>

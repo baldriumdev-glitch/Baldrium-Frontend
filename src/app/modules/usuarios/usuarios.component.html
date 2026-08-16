@@ -415,7 +415,9 @@
             <line x1="12" y1="8" x2="12" y2="12"/>
             <line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
-          Estos valores definen qué compras califican para que Telemercadeo pueda crear un beneficio.
+          Estos valores definen qué compras califican para que Telemercadeo pueda crear un beneficio:
+          monto mínimo de la compra, mínimo de referidos visitados, y de esos referidos al menos uno
+          debe haberse vuelto cliente y comprado por el monto mínimo indicado aquí abajo.
           Un valor en <strong>0</strong> significa sin restricción.
         </div>
 
@@ -431,6 +433,11 @@
           <div class="form-group">
             <label>MÍNIMO DE REFERIDOS VISITADOS</label>
             <input type="number" min="0" [(ngModel)]="paramMinimoReferidos"
+                   (ngModelChange)="exitoGuardarParametros = false" />
+          </div>
+          <div class="form-group form-grid-full">
+            <label>VALOR MÍNIMO DE COMPRA DEL REFERIDO ($)</label>
+            <input type="number" min="0" [(ngModel)]="paramValorMinimoCompraReferido"
                    (ngModelChange)="exitoGuardarParametros = false" />
           </div>
         </div>

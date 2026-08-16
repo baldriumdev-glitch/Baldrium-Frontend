@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BeneficiosService, CompraElegible } from './beneficios.service';
+import { BeneficiosService, CompraElegible, ReferidoCompra } from './beneficios.service';
 
 @Component({
   selector:    'app-beneficios',
@@ -25,6 +25,13 @@ export class BeneficiosComponent implements OnInit {
   // ── Crear beneficio (acción directa, sin selección de producto) ─────
   procesandoId = null as number | null;
   errorAccion  = '';
+
+  // ── Modal referidos de una compra ───────────────────────────────────
+  mostrarModalReferidos = false;
+  compraParaReferidos: CompraElegible | null = null;
+  referidos:           ReferidoCompra[] = [];
+  cargandoReferidos    = false;
+  errorReferidos       = '';
 
   constructor(private svc: BeneficiosService) {}
 
@@ -93,6 +100,45 @@ export class BeneficiosComponent implements OnInit {
         this.errorAccion  = err?.error?.error || 'Error al crear el beneficio.';
       }
     });
+  }
+
+  // ════════════════════════════════════════════════════════════════════
+  //  MODAL REFERIDOS
+  // ════════════════════════════════════════════════════════════════════
+
+  abrirReferidos(c: CompraElegible): void {
+    this.compraParaReferidos    = c;
+    this.mostrarModalReferidos  = true;
+    this.referidos              = [];
+    this.cargandoReferidos      = true;
+    this.errorReferidos         = '';
+
+    this.svc.referidosDeCompra(c.ID).subscribe({
+      next: data => {
+        this.referidos         = data;
+        this.cargandoReferidos = false;
+      },
+      error: (err: any) => {
+        this.cargandoReferidos = false;
+        this.errorReferidos    = err?.error?.error || 'Error al cargar los referidos de la compra.';
+      }
+    });
+  }
+
+  cerrarReferidos(): void {
+    this.mostrarModalReferidos = false;
+    this.compraParaReferidos   = null;
+  }
+
+  getEstadoReferidoClass(estado: string): string {
+    const map: Record<string, string> = {
+      'Pendiente':   'estado-pendiente',
+      'No responde': 'estado-no-responde',
+      'Contactado':  'estado-contactado',
+      'Agendado':    'estado-agendado',
+      'Visitado':    'estado-visitado'
+    };
+    return map[estado] ?? 'estado-default';
   }
 
   // ════════════════════════════════════════════════════════════════════

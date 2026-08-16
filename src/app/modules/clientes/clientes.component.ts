@@ -308,7 +308,9 @@ export class ClientesComponent implements OnInit {
       visitaId:    this.visitaParaEstado.ID,
       estado:      this.nuevoEstado,
       notas:       this.notasEstado.trim(),
-      suplementos: this.nuevoEstado === 'Visitado' ? this.suplementosSeleccionados : []
+      suplementos: this.nuevoEstado === 'Visitado'
+        ? this.suplementosSeleccionados.map(s => ({ inventarioId: s.productoId, cantidad: s.cantidad }))
+        : []
     };
 
     this.svc.cambiarEstado(dto).subscribe({
