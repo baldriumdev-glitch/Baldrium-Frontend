@@ -73,9 +73,11 @@ export class LoginComponent implements OnInit {
     this.error    = '';
 
     this.auth.login(this.form.value).subscribe({
-      next: () => {
+      next: (res) => {
         this.cargando = false;
-        this.router.navigate([this.getRutaInicial()]);
+        // Contraseña temporal (recuperación): debe cambiarla antes de continuar
+        const ruta = res.usuario.debeCambiarContrasena ? '/perfil' : this.getRutaInicial();
+        this.router.navigate([ruta]);
       },
       error: (err: any) => {
         this.cargando = false;

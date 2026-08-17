@@ -41,7 +41,7 @@ export class PerfilService {
     return this.http.put<{ mensaje: string }>(this.base, dto);
   }
  
-  cambiarContrasena(dto: CambiarContrasenaDto): Observable<{ mensaje: string }> {
-    return this.http.patch<{ mensaje: string }>(`${this.base}/contrasena`, dto);
+  cambiarContrasena(dto: CambiarContrasenaDto): Observable<{ mensaje: string; token?: string }> {
+    return this.http.patch<{ mensaje: string; token?: string }>(`${this.base}/contrasena`, dto);
   }
 }

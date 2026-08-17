@@ -21,7 +21,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       if (error.status === 403) {
-        router.navigate(['/dashboard']);
+        // Cambio de contraseña temporal pendiente: el backend bloquea todo
+        // excepto /perfil hasta que la cambie. Redirigir ahí en vez del
+        // 403 genérico, que manda a /dashboard.
+        if ((error.error as any)?.codigo === 'CAMBIO_CONTRASENA_REQUERIDO') {
+          router.navigate(['/perfil']);
+        } else {
+          router.navigate(['/dashboard']);
+        }
       }
       return throwError(() => error);
     })

@@ -21,6 +21,7 @@ export interface Usuario {
   direccion:        string;
   codigoTrabajador: string;
   roles:            RolUsuario[]; // ← array, no string
+  debeCambiarContrasena?: boolean; // ← true si inició sesión con contraseña temporal
 }
 
 export interface LoginRequest {
@@ -139,5 +140,10 @@ export class AuthService {
   this.usuarioSubject.next(actualizado);
 }
 
+  // Reemplaza el token guardado (p.ej. tras cambiar la contraseña, para que el
+  // nuevo token ya no traiga debeCambiarContrasena=true y deje de bloquear rutas)
+  actualizarToken(nuevoToken: string): void {
+    localStorage.setItem(this.TOKEN_KEY, nuevoToken);
+  }
 
 }

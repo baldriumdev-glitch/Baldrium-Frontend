@@ -41,6 +41,10 @@ export class PerfilComponent implements OnInit {
 
   ngOnInit(): void { this.cargar(); }
 
+  get debeCambiarContrasena(): boolean {
+    return !!this.auth.getUsuarioActual()?.debeCambiarContrasena;
+  }
+
   cargar(): void {
     this.cargando = true;
     this.svc.obtener().subscribe({
@@ -144,11 +148,15 @@ export class PerfilComponent implements OnInit {
       contrasenaActual: this.passActual,
       nuevaContrasena:  this.passNueva
     }).subscribe({
-      next: () => {
+      next: (res) => {
         this.guardandoPass = false;
         this.statusPass    = 'ok';
         this.mensajePass   = 'Contraseña actualizada correctamente.';
         this.passActual = ''; this.passNueva = ''; this.passConfirmar = '';
+        // El backend reemite el token sin el flag de cambio obligatorio: hay que
+        // guardarlo para que el usuario deje de estar bloqueado sin re-loguear.
+        if (res.token) this.auth.actualizarToken(res.token);
+        this.auth.actualizarUsuarioLocal({ debeCambiarContrasena: false });
         setTimeout(() => { this.statusPass = 'idle'; this.mensajePass = ''; }, 4000);
       },
       error: (err: any) => {
