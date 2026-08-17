@@ -371,8 +371,8 @@ export class UsuariosComponent implements OnInit {
       correoElectronico: [t.correo,  [Validators.required, Validators.email, Validators.maxLength(100)]],
       celular:           [t.celular, [Validators.required, Validators.pattern(REGEX_SOLO_DIGITOS), Validators.minLength(7), Validators.maxLength(15)]],
       telefono:          [t.telefono, [Validators.pattern(REGEX_DIGITOS_OPC), Validators.maxLength(15)]],
-      codigoTrabajador:  [t.codigoTrabajador, Validators.maxLength(50)],
-      direccion:         [t.direccion, Validators.maxLength(200)]
+      codigoTrabajador:  [t.codigoTrabajador, [Validators.required, Validators.maxLength(50)]],
+      direccion:         [t.direccion, [Validators.required, Validators.maxLength(200)]]
     });
   }
 
