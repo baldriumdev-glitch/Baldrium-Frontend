@@ -6,11 +6,11 @@ import {
 } from '@angular/forms';
 import {
   InventarioService, Producto, CrearProductoDto,
-  AuditoriaInventarioItem, TIPOS_INVENTARIO
+  AuditoriaInventarioItem, AuditoriaInfoItem, TIPOS_INVENTARIO
 } from './inventario.service';
 
 type ModalMode  = 'crear' | 'editar' | null;
-type TabActivo  = 'inventario' | 'movimientos';
+type TabActivo  = 'inventario' | 'movimientos' | 'auditoria';
 
 @Component({
   selector:    'app-inventario',
@@ -25,6 +25,7 @@ export class InventarioComponent implements OnInit {
   productos:          Producto[] = [];
   productosFiltrados: Producto[] = [];
   auditoria:          AuditoriaInventarioItem[] = [];
+  auditoriaInfo:      AuditoriaInfoItem[] = [];
   tiposInventario     = TIPOS_INVENTARIO;
 
   // ── Estados ────────────────────────────────────────────────────────
@@ -53,7 +54,7 @@ export class InventarioComponent implements OnInit {
   filtroStock    = '';
   filtroOrden    = '';
 
-  // ── Búsqueda y filtros auditoría ───────────────────────────────────
+  // ── Búsqueda y filtros auditoría (movimientos de stock) ─────────────
   busquedaAuditoria       = '';
   mostrarFiltrosAuditoria = false;
   filtroAudTipo           = '';
@@ -63,6 +64,40 @@ export class InventarioComponent implements OnInit {
 
   // ── Observaciones expandidas (auditoría) ────────────────────────────
   observacionesExpandidas = new Set<number>();
+
+  // ── Búsqueda y filtros auditoría general (crear/editar/eliminar) ────
+  paginaAuditoriaInfo   = 1;
+  itemsAuditoriaInfoPag = 15;
+  busquedaAuditoriaInfo = '';
+  filtroInfoAccion      = '';
+
+  get auditoriaInfoFiltrada(): AuditoriaInfoItem[] {
+    let resultado = [...this.auditoriaInfo];
+
+    const q = this.busquedaAuditoriaInfo.toLowerCase().trim();
+    if (q) {
+      resultado = resultado.filter(a =>
+        a.NombreResponsable?.toLowerCase().includes(q) ||
+        a.TipoAccion?.toLowerCase().includes(q)         ||
+        a.Descripcion?.toLowerCase().includes(q)
+      );
+    }
+
+    if (this.filtroInfoAccion) {
+      resultado = resultado.filter(a => a.TipoAccion === this.filtroInfoAccion);
+    }
+
+    return resultado;
+  }
+
+  get auditoriaInfoPaginada(): AuditoriaInfoItem[] {
+    const inicio = (this.paginaAuditoriaInfo - 1) * this.itemsAuditoriaInfoPag;
+    return this.auditoriaInfoFiltrada.slice(inicio, inicio + this.itemsAuditoriaInfoPag);
+  }
+
+  get totalPaginasAuditoriaInfo(): number {
+    return Math.ceil(this.auditoriaInfoFiltrada.length / this.itemsAuditoriaInfoPag);
+  }
 
   // ── Modal crear/editar ─────────────────────────────────────────────
   modalMode:            ModalMode    = null;
@@ -107,6 +142,11 @@ export class InventarioComponent implements OnInit {
 
     this.svc.listarAuditoria().subscribe({
       next:  (a) => this.auditoria = a,
+      error: ()  => {}
+    });
+
+    this.svc.listarAuditoriaInfo().subscribe({
+      next:  (a) => this.auditoriaInfo = a,
       error: ()  => {}
     });
   }
@@ -220,7 +260,8 @@ export class InventarioComponent implements OnInit {
     const q = this.busqueda.toLowerCase().trim();
     if (q) {
       resultado = resultado.filter(p =>
-        p.Nombre.toLowerCase().includes(q) ||
+        String(p.ID).includes(q.replace('#', '')) ||
+        p.Nombre.toLowerCase().includes(q)         ||
         p.Tipo.toLowerCase().includes(q)
       );
     }
@@ -283,11 +324,14 @@ export class InventarioComponent implements OnInit {
     this.productoSeleccionado = null;
     this.errorModal           = '';
     this.form = this.fb.group({
-      Nombre:   ['', Validators.required],
-      Tipo:     ['', Validators.required],
-      Valor:    [0,  [Validators.required, Validators.min(0)]],
-      Cantidad: [0,  [Validators.required, Validators.min(0)]]
+      Nombre:           ['', Validators.required],
+      Descripcion:      [''],
+      Tipo:             ['', Validators.required],
+      Valor:            [0,  [Validators.required, Validators.min(0)]],
+      Cantidad:         [0,  [Validators.required, Validators.min(0)]],
+      FechaVencimiento: ['']
     });
+    this._observarTipoParaVencimiento();
   }
 
   abrirEditar(p: Producto): void {
@@ -295,11 +339,39 @@ export class InventarioComponent implements OnInit {
     this.productoSeleccionado = p;
     this.errorModal           = '';
     this.form = this.fb.group({
-      Nombre:   [p.Nombre,   Validators.required],
-      Tipo:     [p.Tipo,     Validators.required],
-      Valor:    [p.Valor,    [Validators.required, Validators.min(0)]],
-      Cantidad: [p.Cantidad, [Validators.required, Validators.min(0)]]
+      Nombre:           [p.Nombre,      Validators.required],
+      Descripcion:      [p.Descripcion || ''],
+      Tipo:             [p.Tipo,        Validators.required],
+      Valor:            [p.Valor,       [Validators.required, Validators.min(0)]],
+      Cantidad:         [p.Cantidad,    [Validators.required, Validators.min(0)]],
+      FechaVencimiento: [p.FechaVencimiento ? p.FechaVencimiento.slice(0, 10) : '']
     });
+    this._observarTipoParaVencimiento();
+  }
+
+  // La fecha de vencimiento solo aplica (y es obligatoria) para Tipo = 'Alimentacion';
+  // para cualquier otro tipo se limpia y deja de validarse.
+  private _observarTipoParaVencimiento(): void {
+    const tipoCtrl = this.form.get('Tipo');
+    const vencCtrl = this.form.get('FechaVencimiento');
+    if (!tipoCtrl || !vencCtrl) return;
+
+    const actualizar = (tipo: string) => {
+      if (tipo === 'Alimentacion') {
+        vencCtrl.setValidators([Validators.required]);
+      } else {
+        vencCtrl.setValidators([]);
+        vencCtrl.setValue('');
+      }
+      vencCtrl.updateValueAndValidity();
+    };
+
+    tipoCtrl.valueChanges.subscribe(actualizar);
+    actualizar(tipoCtrl.value);
+  }
+
+  get esAlimentacion(): boolean {
+    return this.form?.get('Tipo')?.value === 'Alimentacion';
   }
 
   cerrarModal(): void {
@@ -391,14 +463,15 @@ export class InventarioComponent implements OnInit {
         doc.text(`Generado: ${new Date().toLocaleDateString('es-CO')}`, 14, 34);
 
         autoTable.default(doc, {
-          head: [['ID', 'Nombre', 'Tipo', 'Valor Unitario', 'Cantidad', 'Stock']],
+          head: [['ID', 'Nombre', 'Tipo', 'Valor Unitario', 'Cantidad', 'Stock', 'Vencimiento']],
           body: this.productos.map(p => [
             `#${p.ID}`,
             p.Nombre,
             p.Tipo,
             `$${p.Valor.toLocaleString('es-CO')}`,
             p.Cantidad,
-            this.getEstadoStock(p.Cantidad)
+            this.getEstadoStock(p.Cantidad),
+            this.formatearFechaCorta(p.FechaVencimiento)
           ]),
           startY:     42,
           theme:      'grid',
@@ -449,6 +522,49 @@ export class InventarioComponent implements OnInit {
     });
   }
 
+  exportarAuditoriaInfoPDF(): void {
+    import('jspdf').then(({ default: jsPDF }) => {
+      import('jspdf-autotable').then((autoTable) => {
+        const doc = new jsPDF({ orientation: 'landscape' });
+
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Baldrium Group S.A.S', 14, 20);
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Auditoría de Productos', 14, 28);
+        doc.text(`Generado: ${new Date().toLocaleDateString('es-CO')}`, 14, 34);
+
+        autoTable.default(doc, {
+          head: [['Fecha y Hora', 'Acción', 'Responsable', 'Cédula', 'Resultado', 'Descripción']],
+          body: this.auditoriaInfoFiltrada.map(a => [
+            this.formatearFecha(a.FechaHora),
+            a.TipoAccion,
+            a.NombreResponsable,
+            a.CedulaResponsable,
+            a.Resultado,
+            a.Descripcion
+          ]),
+          startY:     42,
+          theme:      'grid',
+          headStyles: { fillColor: [15, 25, 35], textColor: 255, fontStyle: 'bold', fontSize: 8 },
+          bodyStyles: { fontSize: 7 },
+          alternateRowStyles: { fillColor: [248, 249, 251] },
+          columnStyles: {
+            0: { cellWidth: 35 },
+            1: { cellWidth: 25 },
+            2: { cellWidth: 40 },
+            3: { cellWidth: 28 },
+            4: { cellWidth: 25 },
+            5: { cellWidth: 'auto' }
+          }
+        });
+
+        doc.save(`auditoria-productos-${new Date().toISOString().slice(0,10)}.pdf`);
+      });
+    });
+  }
+
   // ════════════════════════════════════════════════════════════════════
   //  HELPERS
   // ════════════════════════════════════════════════════════════════════
@@ -465,6 +581,29 @@ export class InventarioComponent implements OnInit {
     return 'disponible';
   }
 
+  // ── Vencimiento (solo productos Tipo = 'Alimentacion') ──────────────
+  estaVencido(p: Producto): boolean {
+    if (!p.FechaVencimiento) return false;
+    return new Date(p.FechaVencimiento).getTime() < new Date(new Date().toDateString()).getTime();
+  }
+
+  estaPorVencer(p: Producto): boolean {
+    if (!p.FechaVencimiento || this.estaVencido(p)) return false;
+    const dias = (new Date(p.FechaVencimiento).getTime() - new Date(new Date().toDateString()).getTime()) / 86400000;
+    return dias <= 7;
+  }
+
+  getVencimientoClass(p: Producto): string {
+    if (this.estaVencido(p))   return 'venc-vencido';
+    if (this.estaPorVencer(p)) return 'venc-proximo';
+    return 'venc-ok';
+  }
+
+  formatearFechaCorta(fecha: string | null): string {
+    if (!fecha) return '—';
+    return new Date(fecha).toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' });
+  }
+
   getTipoClass(tipo: string): string {
     const map: Record<string, string> = {
       'Beneficio':           'tipo-beneficio',
@@ -476,6 +615,15 @@ export class InventarioComponent implements OnInit {
 
   getMovimientoClass(tipo: string): string {
     return tipo === 'ENTRADA' ? 'mov-entrada' : 'mov-salida';
+  }
+
+  getAccionClass(accion: string): string {
+    const map: Record<string, string> = {
+      'CREAR':    'accion-crear',
+      'EDITAR':   'accion-editar',
+      'ELIMINAR': 'accion-eliminar'
+    };
+    return map[accion] ?? 'accion-default';
   }
 
   getMotivoClass(motivo: string): string {

@@ -489,6 +489,40 @@
   &.sin-stock  { background: rgba(231,76,60,0.15);  color: #E74C3C; }
 }
 
+// ── Badge acción (auditoría general: crear/editar/eliminar) ─────────
+.badge-accion {
+  display:        inline-flex;
+  align-items:    center;
+  padding:        3px 10px;
+  border-radius:  $radius-full;
+  font-size:      10px;
+  font-weight:    700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space:    nowrap;
+
+  &.accion-crear    { background: rgba(39,174,96,0.15);   color: #27AE60; }
+  &.accion-editar   { background: rgba(245,158,11,0.15);  color: #D97706; }
+  &.accion-eliminar { background: rgba(231,76,60,0.15);   color: #E74C3C; }
+  &.accion-default  { background: rgba(148,163,184,0.15); color: #64748B; }
+}
+
+// ── Badge vencimiento (solo Tipo = 'Alimentacion') ──────────────────
+.badge-venc {
+  display:        inline-flex;
+  align-items:    center;
+  padding:        4px 10px;
+  border-radius:  $radius-full;
+  font-size:      10px;
+  font-weight:    700;
+  letter-spacing: 0.3px;
+  white-space:    nowrap;
+
+  &.venc-ok      { background: rgba(148,163,184,0.15); color: #64748B; }
+  &.venc-proximo { background: rgba(245,158,11,0.15);  color: #D97706; }
+  &.venc-vencido { background: rgba(231,76,60,0.15);   color: #E74C3C; }
+}
+
 // ── Badges movimiento ──────────────────────────────────────────────
 .badge-movimiento {
   display:        inline-flex;

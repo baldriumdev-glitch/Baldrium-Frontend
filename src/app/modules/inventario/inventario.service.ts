@@ -4,19 +4,23 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface Producto {
-  ID:        number;
-  Nombre:    string;
-  Tipo:      string;
-  Valor:     number;
-  Cantidad:  number;
-  UpdatedAt?: string;
+  ID:                number;
+  Nombre:            string;
+  Descripcion:       string | null;
+  Tipo:              string;
+  Valor:             number;
+  Cantidad:          number;
+  FechaVencimiento:  string | null;
+  UpdatedAt?:        string;
 }
 
 export interface CrearProductoDto {
-  Nombre:    string;
-  Tipo:      string;
-  Valor:     number;
-  Cantidad:  number;
+  Nombre:            string;
+  Descripcion:       string | null;
+  Tipo:              string;
+  Valor:             number;
+  Cantidad:          number;
+  FechaVencimiento:  string | null;
 }
 
 export interface AuditoriaInventarioItem {
@@ -33,6 +37,23 @@ export interface AuditoriaInventarioItem {
   Motivo:              string;
   Observaciones:       string;
   FechaHora:           string;
+}
+
+// Historial general (crear/editar/eliminar producto) — distinto de los
+// movimientos de stock: existe aunque la edición no haya cambiado la cantidad.
+export interface AuditoriaInfoItem {
+  ID:                 number;
+  RegistroAfectadoID: number;
+  CedulaResponsable:  string;
+  NombreResponsable:  string;
+  TipoAccion:         string;
+  Descripcion:        string;
+  ValorAnterior:      any;
+  ValorNuevo:         any;
+  DireccionIP:        string;
+  Dispositivo:        string;
+  Resultado:          string;
+  FechaHora:          string;
 }
 
 export const TIPOS_INVENTARIO = [
@@ -56,8 +77,8 @@ export class InventarioService {
     return this.http.get<AuditoriaInventarioItem[]>(`${this.base}/auditoria`);
   }
 
-  listarAuditoriaInfo(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.base}/auditoria/info`);
+  listarAuditoriaInfo(): Observable<AuditoriaInfoItem[]> {
+    return this.http.get<AuditoriaInfoItem[]>(`${this.base}/auditoria/info`);
   }
 
   crear(datos: CrearProductoDto): Observable<any> {

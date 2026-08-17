@@ -105,6 +105,16 @@
       Movimientos
       <span class="tab-count" *ngIf="auditoria.length > 0">{{ auditoriaFiltrada.length }}</span>
     </button>
+    <button class="tab-btn" [class.active]="tabActivo === 'auditoria'" (click)="cambiarTab('auditoria')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+      </svg>
+      Auditoría
+      <span class="tab-count" *ngIf="auditoriaInfo.length > 0">{{ auditoriaInfoFiltrada.length }}</span>
+    </button>
   </div>
 
   <!-- ── Tabla productos ────────────────────────────────────────────── -->
@@ -201,6 +211,7 @@
             <th>VALOR UNITARIO</th>
             <th>CANTIDAD</th>
             <th>ESTADO STOCK</th>
+            <th>VENCIMIENTO</th>
             <th>ACCIÓN</th>
           </tr>
         </thead>
@@ -221,6 +232,14 @@
               </span>
             </td>
             <td>
+              <span class="badge-venc" [ngClass]="getVencimientoClass(p)" *ngIf="p.FechaVencimiento; else sinVencimiento">
+                {{ formatearFechaCorta(p.FechaVencimiento) }}
+                <ng-container *ngIf="estaVencido(p)"> · Vencido</ng-container>
+                <ng-container *ngIf="estaPorVencer(p)"> · Próximo</ng-container>
+              </span>
+              <ng-template #sinVencimiento>—</ng-template>
+            </td>
+            <td>
               <div class="acciones-wrap">
                 <button class="btn-editar" (click)="abrirEditar(p)">EDITAR</button>
                 <button class="btn-eliminar" (click)="abrirConfirmEliminar(p, $event)">
@@ -236,7 +255,7 @@
             </td>
           </tr>
           <tr *ngIf="paginados.length === 0">
-            <td colspan="7" class="table-empty">No se encontraron productos</td>
+            <td colspan="8" class="table-empty">No se encontraron productos</td>
           </tr>
         </tbody>
       </table>
@@ -438,6 +457,106 @@
     </div>
   </div>
 
+  <!-- ── Tabla auditoría general (crear/editar/eliminar producto) ──── -->
+  <div class="card-section" *ngIf="tabActivo === 'auditoria'">
+    <div class="section-header">
+      <h2>Auditoría de Productos</h2>
+      <div class="section-header-right">
+        <div class="search-wrap">
+          <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Buscar acción, responsable..."
+            [(ngModel)]="busquedaAuditoriaInfo"
+            (input)="paginaAuditoriaInfo = 1"
+          />
+        </div>
+        <select class="btn-filtro" [(ngModel)]="filtroInfoAccion" (change)="paginaAuditoriaInfo = 1">
+          <option value="">Todas las acciones</option>
+          <option value="CREAR">Crear</option>
+          <option value="EDITAR">Editar</option>
+          <option value="ELIMINAR">Eliminar</option>
+        </select>
+        <button class="btn-filtro" (click)="exportarAuditoriaInfoPDF()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Exportar
+        </button>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="tabla-baldrium">
+        <thead>
+          <tr>
+            <th>FECHA Y HORA</th>
+            <th>ACCIÓN</th>
+            <th>RESPONSABLE</th>
+            <th>DESCRIPCIÓN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let a of auditoriaInfoPaginada">
+            <td class="td-fecha">{{ formatearFecha(a.FechaHora) }}</td>
+            <td>
+              <span class="badge-accion" [ngClass]="getAccionClass(a.TipoAccion)">
+                {{ a.TipoAccion }}
+              </span>
+            </td>
+            <td>
+              <div class="user-cell">
+                <div class="avatar-initials avatar-initials-sm
+                     avatar-{{ getPrimeraLetra(a.NombreResponsable || '') }}">
+                  {{ getInicialesResponsable(a.NombreResponsable || '') }}
+                </div>
+                <div class="user-cell-info">
+                  <span class="user-cell-name">{{ a.NombreResponsable }}</span>
+                  <span class="user-cell-id">{{ a.CedulaResponsable }}</span>
+                </div>
+              </div>
+            </td>
+            <td class="td-descripcion">{{ a.Descripcion }}</td>
+          </tr>
+          <tr *ngIf="auditoriaInfoPaginada.length === 0">
+            <td colspan="4" class="table-empty">Sin actividad registrada</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="paginacion">
+        <span class="pag-info">
+          Mostrando {{ auditoriaInfoPaginada.length }} de
+          {{ auditoriaInfoFiltrada.length }} registros
+        </span>
+        <div class="pag-btns">
+          <button (click)="paginaAuditoriaInfo = paginaAuditoriaInfo - 1"
+                  [disabled]="paginaAuditoriaInfo === 1">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+          <button (click)="paginaAuditoriaInfo = paginaAuditoriaInfo + 1"
+                  [disabled]="paginaAuditoriaInfo === totalPaginasAuditoriaInfo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- ══ MODAL Crear / Editar ══════════════════════════════════════════ -->
@@ -489,6 +608,12 @@
                  placeholder="Ej. Kit de cuchillos pro" />
         </div>
 
+        <div class="form-group form-grid-full">
+          <label>DESCRIPCIÓN</label>
+          <textarea formControlName="Descripcion" rows="2"
+                    placeholder="Detalles adicionales del producto..."></textarea>
+        </div>
+
         <div class="form-group"
              [class.has-error]="form.get('Tipo')?.invalid && form.get('Tipo')?.touched">
           <label>TIPO</label>
@@ -503,6 +628,17 @@
           <label>VALOR UNITARIO ($)</label>
           <input type="number" formControlName="Valor"
                  placeholder="0" min="0" />
+        </div>
+
+        <div class="form-group form-grid-full"
+             *ngIf="esAlimentacion"
+             [class.has-error]="form.get('FechaVencimiento')?.invalid && form.get('FechaVencimiento')?.touched">
+          <label>FECHA DE VENCIMIENTO</label>
+          <input type="date" formControlName="FechaVencimiento" />
+          <span class="field-error-msg"
+                *ngIf="form.get('FechaVencimiento')?.invalid && form.get('FechaVencimiento')?.touched">
+            La fecha de vencimiento es obligatoria para productos de tipo Alimentación.
+          </span>
         </div>
 
         <div class="form-group form-grid-full">
