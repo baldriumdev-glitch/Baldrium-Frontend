@@ -13,6 +13,12 @@ import {
 type ModalMode = 'crear' | 'editar' | null;
 type TabActivo = 'usuarios' | 'auditoria' | 'parametros';
 
+// Deben reflejar exactamente las reglas del backend (usuarioServicio.js)
+// para que el formulario nunca deje pasar algo que el API va a rechazar.
+const REGEX_NOMBRE        = /^[A-Za-zÁÉÍÓÚÑÜáéíóúñü\s'.-]+$/;
+const REGEX_SOLO_DIGITOS  = /^\d+$/;
+const REGEX_DIGITOS_OPC   = /^\d*$/;
+
 @Component({
   selector:    'app-usuarios',
   standalone:  true,
@@ -342,13 +348,13 @@ export class UsuariosComponent implements OnInit {
     this.errorModal              = '';
     this.mostrarConfirmDesactivar = false;
     this.form = this.fb.group({
-      nombre:            ['', Validators.required],
-      cedula:            ['', Validators.required],
-      correoElectronico: ['', [Validators.required, Validators.email]],
-      celular:           ['', Validators.required],
-      telefono:          [''],
-      codigoTrabajador:  [''],
-      direccion:         [''],
+      nombre:            ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100), Validators.pattern(REGEX_NOMBRE)]],
+      cedula:            ['', [Validators.required, Validators.pattern(REGEX_SOLO_DIGITOS), Validators.minLength(6), Validators.maxLength(15)]],
+      correoElectronico: ['', [Validators.required, Validators.email, Validators.maxLength(100)]],
+      celular:           ['', [Validators.required, Validators.pattern(REGEX_SOLO_DIGITOS), Validators.minLength(7), Validators.maxLength(15)]],
+      telefono:          ['', [Validators.pattern(REGEX_DIGITOS_OPC), Validators.maxLength(15)]],
+      codigoTrabajador:  ['', [Validators.required, Validators.maxLength(50)]],
+      direccion:         ['', [Validators.required, Validators.maxLength(200)]],
       contrasena:        ['', [Validators.required, Validators.minLength(6)]]
     });
   }
@@ -360,13 +366,13 @@ export class UsuariosComponent implements OnInit {
     this.errorModal              = '';
     this.mostrarConfirmDesactivar = false;
     this.form = this.fb.group({
-      nombre:            [t.nombre,  Validators.required],
+      nombre:            [t.nombre,  [Validators.required, Validators.minLength(3), Validators.maxLength(100), Validators.pattern(REGEX_NOMBRE)]],
       cedula:            [{ value: t.cedula, disabled: true }],
-      correoElectronico: [t.correo,  [Validators.required, Validators.email]],
-      celular:           [t.celular, Validators.required],
-      telefono:          [t.telefono],
-      codigoTrabajador:  [t.codigoTrabajador],
-      direccion:         [t.direccion]
+      correoElectronico: [t.correo,  [Validators.required, Validators.email, Validators.maxLength(100)]],
+      celular:           [t.celular, [Validators.required, Validators.pattern(REGEX_SOLO_DIGITOS), Validators.minLength(7), Validators.maxLength(15)]],
+      telefono:          [t.telefono, [Validators.pattern(REGEX_DIGITOS_OPC), Validators.maxLength(15)]],
+      codigoTrabajador:  [t.codigoTrabajador, Validators.maxLength(50)],
+      direccion:         [t.direccion, Validators.maxLength(200)]
     });
   }
 
@@ -384,6 +390,77 @@ export class UsuariosComponent implements OnInit {
 
   rolSeleccionado(rolId: number): boolean {
     return this.rolesSeleccionados.includes(rolId);
+  }
+
+  // Bloquea cualquier tecla que no sea un dígito en Cédula/Celular/Teléfono,
+  // para no depender solo de la validación al guardar (evita el Error 500
+  // de MySQL por letras en una columna numérica).
+  soloNumeros(event: KeyboardEvent): void {
+    const permitidas = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End'];
+    if (permitidas.includes(event.key) || event.ctrlKey || event.metaKey) return;
+    if (!/^[0-9]$/.test(event.key)) event.preventDefault();
+  }
+
+  // ── Mensajes de error específicos por campo (formulario crear/editar) ──
+  get errorNombre(): string {
+    const c = this.form.get('nombre');
+    if (!c || !c.touched || !c.errors) return '';
+    if (c.errors['required'])  return 'El nombre es obligatorio.';
+    if (c.errors['minlength']) return 'El nombre debe tener al menos 3 caracteres.';
+    if (c.errors['maxlength']) return 'El nombre no puede superar los 100 caracteres.';
+    if (c.errors['pattern'])   return 'El nombre solo puede contener letras y espacios.';
+    return '';
+  }
+
+  get errorCedula(): string {
+    const c = this.form.get('cedula');
+    if (!c || !c.touched || !c.errors) return '';
+    if (c.errors['required']) return 'La cédula es obligatoria.';
+    if (c.errors['pattern'])  return 'La cédula solo puede contener números.';
+    if (c.errors['minlength'] || c.errors['maxlength']) return 'La cédula debe tener entre 6 y 15 dígitos.';
+    return '';
+  }
+
+  get errorCorreo(): string {
+    const c = this.form.get('correoElectronico');
+    if (!c || !c.touched || !c.errors) return '';
+    if (c.errors['required'])  return 'El correo es obligatorio.';
+    if (c.errors['email'])     return 'Ingresa un correo electrónico válido.';
+    if (c.errors['maxlength']) return 'El correo no puede superar los 100 caracteres.';
+    return '';
+  }
+
+  get errorCelular(): string {
+    const c = this.form.get('celular');
+    if (!c || !c.touched || !c.errors) return '';
+    if (c.errors['required']) return 'El celular es obligatorio.';
+    if (c.errors['pattern'])  return 'El celular solo puede contener números.';
+    if (c.errors['minlength'] || c.errors['maxlength']) return 'El celular debe tener entre 7 y 15 dígitos.';
+    return '';
+  }
+
+  get errorTelefono(): string {
+    const c = this.form.get('telefono');
+    if (!c || !c.touched || !c.errors) return '';
+    if (c.errors['pattern'])   return 'El teléfono solo puede contener números.';
+    if (c.errors['maxlength']) return 'El teléfono no puede superar los 15 dígitos.';
+    return '';
+  }
+
+  get errorDireccion(): string {
+    const c = this.form.get('direccion');
+    if (!c || !c.touched || !c.errors) return '';
+    if (c.errors['required'])  return 'La dirección es obligatoria.';
+    if (c.errors['maxlength']) return 'La dirección no puede superar los 200 caracteres.';
+    return '';
+  }
+
+  get errorCodigoTrabajador(): string {
+    const c = this.form.get('codigoTrabajador');
+    if (!c || !c.touched || !c.errors) return '';
+    if (c.errors['required'])  return 'El código de trabajador es obligatorio.';
+    if (c.errors['maxlength']) return 'El código de trabajador no puede superar los 50 caracteres.';
+    return '';
   }
 
   guardar(): void {

@@ -516,45 +516,56 @@
         <div class="form-group"
              [class.has-error]="form.get('nombre')?.invalid && form.get('nombre')?.touched">
           <label>NOMBRE</label>
-          <input type="text" formControlName="nombre" placeholder="Ej. Juan Pérez" />
+          <input type="text" formControlName="nombre" placeholder="Ej. Juan Pérez" maxlength="100" />
+          <span class="field-error-msg" *ngIf="errorNombre">{{ errorNombre }}</span>
         </div>
 
         <div class="form-group"
              [class.has-error]="form.get('cedula')?.invalid && form.get('cedula')?.touched">
           <label>CÉDULA</label>
-          <input type="text" formControlName="cedula" placeholder="000-0000000-0" />
+          <input type="text" formControlName="cedula" placeholder="0000000000"
+                 inputmode="numeric" maxlength="15" (keydown)="soloNumeros($event)" />
+          <span class="field-error-msg" *ngIf="errorCedula">{{ errorCedula }}</span>
         </div>
 
         <div class="form-group"
              [class.has-error]="form.get('correoElectronico')?.invalid && form.get('correoElectronico')?.touched">
           <label>EMAIL</label>
           <input type="email" formControlName="correoElectronico"
-                 placeholder="usuario@baldrium.com" />
+                 placeholder="usuario@baldrium.com" maxlength="100" />
+          <span class="field-error-msg" *ngIf="errorCorreo">{{ errorCorreo }}</span>
         </div>
 
         <div class="form-group"
              [class.has-error]="form.get('celular')?.invalid && form.get('celular')?.touched">
           <label>CELULAR</label>
           <input type="text" formControlName="celular"
-                 placeholder="+57 300 000 0000" />
+                 placeholder="3000000000" inputmode="numeric" maxlength="15" (keydown)="soloNumeros($event)" />
+          <span class="field-error-msg" *ngIf="errorCelular">{{ errorCelular }}</span>
         </div>
 
-        <div class="form-group">
+        <div class="form-group"
+             [class.has-error]="form.get('telefono')?.invalid && form.get('telefono')?.touched">
           <label>TELÉFONO</label>
           <input type="text" formControlName="telefono"
-                 placeholder="+57 601 000 0000" />
+                 placeholder="6010000000" inputmode="numeric" maxlength="15" (keydown)="soloNumeros($event)" />
+          <span class="field-error-msg" *ngIf="errorTelefono">{{ errorTelefono }}</span>
         </div>
 
-        <div class="form-group">
+        <div class="form-group"
+             [class.has-error]="form.get('codigoTrabajador')?.invalid && form.get('codigoTrabajador')?.touched">
           <label>CÓDIGO TRABAJADOR</label>
           <input type="text" formControlName="codigoTrabajador"
-                 placeholder="BAL-001" />
+                 placeholder="BAL-001" maxlength="50" />
+          <span class="field-error-msg" *ngIf="errorCodigoTrabajador">{{ errorCodigoTrabajador }}</span>
         </div>
 
-        <div class="form-group form-grid-full">
+        <div class="form-group form-grid-full"
+             [class.has-error]="form.get('direccion')?.invalid && form.get('direccion')?.touched">
           <label>DIRECCIÓN</label>
           <input type="text" formControlName="direccion"
-                 placeholder="Calle, Número, Sector..." />
+                 placeholder="Calle, Número, Sector..." maxlength="200" />
+          <span class="field-error-msg" *ngIf="errorDireccion">{{ errorDireccion }}</span>
         </div>
 
         <div class="form-group form-grid-full" *ngIf="modalMode === 'crear'">
@@ -563,7 +574,7 @@
                  placeholder="Mínimo 6 caracteres" />
         </div>
 
-        <div class="form-group form-grid-full">
+        <div class="form-group form-grid-full" [class.has-error]="rolesSeleccionados.length === 0">
           <label>ROLES</label>
           <div class="roles-grid">
             <label
@@ -577,6 +588,9 @@
               <span>{{ rol.nombre }}</span>
             </label>
           </div>
+          <span class="field-error-msg" *ngIf="rolesSeleccionados.length === 0">
+            Selecciona al menos un rol.
+          </span>
         </div>
 
       </div>
@@ -602,7 +616,7 @@
         <button class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
         <button class="btn btn-primary"
                 (click)="guardar()"
-                [disabled]="form.invalid || cargandoModal">
+                [disabled]="form.invalid || rolesSeleccionados.length === 0 || cargandoModal">
           <span *ngIf="!cargandoModal">
             {{ modalMode === 'crear' ? 'Crear Usuario' : 'Guardar Cambios' }}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
