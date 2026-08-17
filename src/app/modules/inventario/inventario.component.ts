@@ -65,6 +65,9 @@ export class InventarioComponent implements OnInit {
   // ── Observaciones expandidas (auditoría) ────────────────────────────
   observacionesExpandidas = new Set<number>();
 
+  // ── Descripciones expandidas (tabla de productos) ───────────────────
+  descripcionesProductoExpandidas = new Set<number>();
+
   // ── Búsqueda y filtros auditoría general (crear/editar/eliminar) ────
   paginaAuditoriaInfo   = 1;
   itemsAuditoriaInfoPag = 15;
@@ -652,6 +655,15 @@ export class InventarioComponent implements OnInit {
   }
 
   esObservacionLarga(texto: string): boolean {
+    return (texto?.length ?? 0) > 40;
+  }
+
+  toggleDescripcionProducto(id: number): void {
+    if (this.descripcionesProductoExpandidas.has(id)) this.descripcionesProductoExpandidas.delete(id);
+    else this.descripcionesProductoExpandidas.add(id);
+  }
+
+  esDescripcionLarga(texto: string | null): boolean {
     return (texto?.length ?? 0) > 40;
   }
 

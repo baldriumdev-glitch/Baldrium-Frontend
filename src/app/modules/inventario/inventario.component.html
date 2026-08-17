@@ -207,6 +207,7 @@
           <tr>
             <th>ID</th>
             <th>NOMBRE</th>
+            <th>DESCRIPCIÓN</th>
             <th>TIPO</th>
             <th>VALOR UNITARIO</th>
             <th>CANTIDAD</th>
@@ -219,6 +220,21 @@
           <tr *ngFor="let p of paginados">
             <td class="td-id">#{{ p.ID }}</td>
             <td class="td-nombre">{{ p.Nombre }}</td>
+            <td class="td-descripcion-producto">
+              <ng-container *ngIf="p.Descripcion; else sinDescripcion">
+                <span class="celda-expandible"
+                      [class.expandido]="descripcionesProductoExpandidas.has(p.ID)"
+                      [class.clickeable]="esDescripcionLarga(p.Descripcion)"
+                      (click)="esDescripcionLarga(p.Descripcion) && toggleDescripcionProducto(p.ID)">
+                  {{ p.Descripcion }}
+                </span>
+                <button type="button" class="btn-ver-mas" *ngIf="esDescripcionLarga(p.Descripcion)"
+                        (click)="toggleDescripcionProducto(p.ID)">
+                  {{ descripcionesProductoExpandidas.has(p.ID) ? 'Ver menos' : 'Ver más' }}
+                </button>
+              </ng-container>
+              <ng-template #sinDescripcion>—</ng-template>
+            </td>
             <td>
               <span class="badge-tipo" [ngClass]="getTipoClass(p.Tipo)">
                 {{ p.Tipo }}
@@ -255,7 +271,7 @@
             </td>
           </tr>
           <tr *ngIf="paginados.length === 0">
-            <td colspan="8" class="table-empty">No se encontraron productos</td>
+            <td colspan="9" class="table-empty">No se encontraron productos</td>
           </tr>
         </tbody>
       </table>
