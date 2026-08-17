@@ -4,6 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { PerfilService, PerfilData } from './perfil.service';
 import { AuthService } from '../../core/services/auth.service';
 
+// Deben reflejar exactamente las reglas del backend (validacionesTrabajador.js)
+// para que el formulario nunca deje pasar algo que el API va a rechazar.
+const REGEX_NOMBRE       = /^[A-Za-zÁÉÍÓÚÑÜáéíóúñü\s'.-]+$/;
+const REGEX_SOLO_DIGITOS = /^\d+$/;
+
 @Component({
   selector:    'app-perfil',
   standalone:  true,
@@ -73,21 +78,57 @@ export class PerfilComponent implements OnInit {
   }
 
   guardarInfo(): void {
-    if (!this.editNombre.trim() || !this.editCelular.trim() ||
-        !this.editCorreo.trim() || !this.editDireccion.trim()) {
+    const nombre    = this.editNombre.trim();
+    const celular   = this.editCelular.trim();
+    const telefono  = this.editTelefono.trim();
+    const correo    = this.editCorreo.trim();
+    const direccion = this.editDireccion.trim();
+
+    if (!nombre || !celular || !correo || !direccion) {
       this.statusInfo  = 'err';
       this.mensajeInfo = 'Nombre, celular, correo y dirección son obligatorios.';
       return;
     }
+    if (nombre.length < 3 || nombre.length > 100) {
+      this.statusInfo  = 'err';
+      this.mensajeInfo = 'El nombre debe tener entre 3 y 100 caracteres.';
+      return;
+    }
+    if (!REGEX_NOMBRE.test(nombre)) {
+      this.statusInfo  = 'err';
+      this.mensajeInfo = 'El nombre solo puede contener letras y espacios.';
+      return;
+    }
+    if (!REGEX_SOLO_DIGITOS.test(celular) || celular.length < 7 || celular.length > 15) {
+      this.statusInfo  = 'err';
+      this.mensajeInfo = 'El celular debe tener entre 7 y 15 dígitos, solo números.';
+      return;
+    }
+    if (telefono && (!REGEX_SOLO_DIGITOS.test(telefono) || telefono.length > 15)) {
+      this.statusInfo  = 'err';
+      this.mensajeInfo = 'El teléfono solo puede contener números (máximo 15 dígitos).';
+      return;
+    }
+    if (correo.length > 100) {
+      this.statusInfo  = 'err';
+      this.mensajeInfo = 'El correo no puede superar los 100 caracteres.';
+      return;
+    }
+    if (direccion.length > 200) {
+      this.statusInfo  = 'err';
+      this.mensajeInfo = 'La dirección no puede superar los 200 caracteres.';
+      return;
+    }
+
     this.guardandoInfo = true;
     this.statusInfo    = 'idle';
 
     this.svc.actualizar({
-      Nombre:            this.editNombre.trim(),
-      Celular:           this.editCelular.trim(),
-      Telefono:          this.editTelefono.trim() || null,
-      CorreoElectronico: this.editCorreo.trim(),
-      Direccion:         this.editDireccion.trim()
+      Nombre:            nombre,
+      Celular:           celular,
+      Telefono:          telefono || null,
+      CorreoElectronico: correo,
+      Direccion:         direccion
     }).subscribe({
       next: () => {
         this.guardandoInfo = false;
@@ -121,6 +162,15 @@ export class PerfilComponent implements OnInit {
 
   get passesCoinciden(): boolean {
     return !!this.passNueva && this.passNueva === this.passConfirmar;
+  }
+
+  // Bloquea cualquier tecla que no sea un dígito en Celular/Teléfono, para no
+  // depender solo de la validación al guardar (evita el Error 500 de MySQL
+  // por letras en una columna numérica).
+  soloNumeros(event: KeyboardEvent): void {
+    const permitidas = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End'];
+    if (permitidas.includes(event.key) || event.ctrlKey || event.metaKey) return;
+    if (!/^[0-9]$/.test(event.key)) event.preventDefault();
   }
 
   cambiarContrasena(): void {

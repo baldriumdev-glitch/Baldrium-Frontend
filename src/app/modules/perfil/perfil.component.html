@@ -84,13 +84,14 @@
 
             <div class="form-group form-group-full">
               <label class="form-label-perfil">NOMBRE COMPLETO <span class="req">*</span></label>
-              <input class="form-input-perfil" type="text"
+              <input class="form-input-perfil" type="text" maxlength="100"
                      [(ngModel)]="editNombre" placeholder="Nombre Apellido" />
             </div>
 
             <div class="form-group">
               <label class="form-label-perfil">CELULAR <span class="req">*</span></label>
               <input class="form-input-perfil" type="text"
+                     inputmode="numeric" maxlength="15" (keydown)="soloNumeros($event)"
                      [(ngModel)]="editCelular" placeholder="3001234567" />
             </div>
 
@@ -99,18 +100,19 @@
                 <span class="opt">opcional</span>
               </label>
               <input class="form-input-perfil" type="text"
+                     inputmode="numeric" maxlength="15" (keydown)="soloNumeros($event)"
                      [(ngModel)]="editTelefono" placeholder="6011234567" />
             </div>
 
             <div class="form-group form-group-full">
               <label class="form-label-perfil">CORREO ELECTRÓNICO <span class="req">*</span></label>
-              <input class="form-input-perfil" type="email"
+              <input class="form-input-perfil" type="email" maxlength="100"
                      [(ngModel)]="editCorreo" placeholder="usuario@empresa.com" />
             </div>
 
             <div class="form-group form-group-full">
               <label class="form-label-perfil">DIRECCIÓN <span class="req">*</span></label>
-              <input class="form-input-perfil" type="text"
+              <input class="form-input-perfil" type="text" maxlength="200"
                      [(ngModel)]="editDireccion" placeholder="Calle 10 #20-30, Bogotá" />
             </div>
 
