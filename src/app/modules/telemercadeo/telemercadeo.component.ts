@@ -838,4 +838,57 @@ export class TelemercadeoComponent implements OnInit, OnDestroy {
   getPrimeraLetra(nombre: string): string {
     return nombre?.[0]?.toUpperCase() ?? 'A';
   }
+
+  formatearFechaExport(fecha: string): string {
+    if (!fecha) return '—';
+    const d = new Date(fecha);
+    return d.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+
+  // ════════════════════════════════════════════════════════════════════
+  //  EXPORTAR PDF (prospectos / referidos)
+  // ════════════════════════════════════════════════════════════════════
+
+  exportarPendientesPDF(): void {
+    this._exportarProspectosPDF(this.pendientesFiltrados, 'Prospectos Por Gestionar', 'prospectos-por-gestionar');
+  }
+
+  exportarEnGestionPDF(): void {
+    this._exportarProspectosPDF(this.enGestionFiltrados, 'Prospectos Gestionados', 'prospectos-gestionados');
+  }
+
+  private _exportarProspectosPDF(datos: Prospecto[], titulo: string, nombreArchivo: string): void {
+    import('jspdf').then(({ default: jsPDF }) => {
+      import('jspdf-autotable').then((autoTable) => {
+        const doc = new jsPDF();
+
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Baldrium Group S.A.S', 14, 20);
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        doc.text(titulo, 14, 28);
+        doc.text(`Generado: ${new Date().toLocaleDateString('es-CO')}`, 14, 34);
+
+        autoTable.default(doc, {
+          head: [['ID', 'Nombre', 'Celular', 'Dirección', 'Estado', 'Última actualización']],
+          body: datos.map(p => [
+            `#${p.ID}`,
+            p.Nombre,
+            p.Celular,
+            p.Direccion,
+            p.Estado,
+            this.formatearFechaExport(p.FechaActualizacion)
+          ]),
+          startY:     42,
+          theme:      'grid',
+          headStyles: { fillColor: [15, 25, 35], textColor: 255, fontStyle: 'bold', fontSize: 9 },
+          bodyStyles: { fontSize: 8 },
+          alternateRowStyles: { fillColor: [248, 249, 251] }
+        });
+
+        doc.save(`${nombreArchivo}-${new Date().toISOString().slice(0,10)}.pdf`);
+      });
+    });
+  }
 }

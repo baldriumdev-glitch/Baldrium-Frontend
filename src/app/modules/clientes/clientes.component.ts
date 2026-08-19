@@ -292,10 +292,15 @@ export class ClientesComponent implements OnInit {
   }
 
   setCantidadSuplemento(productoId: number, cantidad: number): void {
+    // Nunca deja pedir más de lo que hay en stock (evita el error del backend
+    // por descontar de más, y le muestra el límite al usuario al momento).
+    const stock = this.alimentacion.find(p => p.ID === productoId)?.Cantidad ?? 0;
+    const cantidadTope = Math.min(cantidad, stock);
+
     const idx = this.suplementosSeleccionados.findIndex(s => s.productoId === productoId);
-    if (cantidad <= 0) { if (idx > -1) this.suplementosSeleccionados.splice(idx, 1); }
-    else if (idx > -1) { this.suplementosSeleccionados[idx].cantidad = cantidad; }
-    else               { this.suplementosSeleccionados.push({ productoId, cantidad }); }
+    if (cantidadTope <= 0) { if (idx > -1) this.suplementosSeleccionados.splice(idx, 1); }
+    else if (idx > -1) { this.suplementosSeleccionados[idx].cantidad = cantidadTope; }
+    else               { this.suplementosSeleccionados.push({ productoId, cantidad: cantidadTope }); }
   }
 
   guardarEstado(): void {
@@ -432,10 +437,16 @@ export class ClientesComponent implements OnInit {
   }
 
   // ── FIX 1: usar p.Valor en lugar de p.Precio (columna real en DB) ──
+  // Nunca deja agregar/incrementar más de lo que hay en stock (evita el
+  // error del backend por comprar de más, y le muestra el límite al
+  // usuario al momento).
   agregarProducto(p: ProductoCocina): void {
+    if (p.Cantidad === 0) return;
+
     const existe = this.itemsCompra.find(i => i.productoId === p.ID);
-    if (existe) { existe.cantidad++; }
-    else {
+    if (existe) {
+      if (existe.cantidad < p.Cantidad) existe.cantidad++;
+    } else {
       this.itemsCompra.push({
         productoId: p.ID, nombre: p.Nombre, cantidad: 1, precio: p.Valor
       });
@@ -445,8 +456,14 @@ export class ClientesComponent implements OnInit {
   }
 
   ajustarCantidadItem(idx: number, delta: number): void {
-    this.itemsCompra[idx].cantidad += delta;
-    if (this.itemsCompra[idx].cantidad <= 0) this.itemsCompra.splice(idx, 1);
+    const item  = this.itemsCompra[idx];
+    const stock = this.stockDisponible(item.productoId);
+    item.cantidad = Math.min(item.cantidad + delta, stock);
+    if (item.cantidad <= 0) this.itemsCompra.splice(idx, 1);
+  }
+
+  stockDisponible(productoId: number): number {
+    return this.inventarioCocina.find(p => p.ID === productoId)?.Cantidad ?? Infinity;
   }
 
   quitarItem(idx: number): void { this.itemsCompra.splice(idx, 1); }

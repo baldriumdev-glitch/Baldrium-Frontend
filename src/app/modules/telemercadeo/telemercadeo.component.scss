@@ -275,6 +275,26 @@
   @media (max-width: 767px) { width: 160px; }
 }
 
+// ── Botón exportar ─────────────────────────────────────────────────
+.btn-filtro {
+  display:       flex;
+  align-items:   center;
+  gap:           7px;
+  padding:       8px 14px;
+  background:    rgba(255,255,255,0.10);
+  border:        1.5px solid rgba(255,255,255,0.15);
+  border-radius: $radius-md;
+  font-family:   $font-body;
+  font-size:     13px;
+  font-weight:   600;
+  color:         rgba(255,255,255,0.80);
+  cursor:        pointer;
+  transition:    all 0.2s;
+  white-space:   nowrap;
+
+  &:hover { background: rgba(255,255,255,0.18); border-color: $gold; color: $gold-light; }
+}
+
 // ════════════════════════════════════════════════════════════════════
 //  TABLA
 // ════════════════════════════════════════════════════════════════════

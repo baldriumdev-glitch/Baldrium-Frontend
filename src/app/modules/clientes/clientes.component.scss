@@ -773,6 +773,19 @@
   white-space: nowrap;
 }
 
+.suplemento-stock {
+  font-size:   11px;
+  font-weight: 600;
+  color:       $text-muted;
+  white-space: nowrap;
+}
+
+.suplemento-item.suplemento-sin-stock {
+  opacity: 0.6;
+
+  .suplemento-stock { color: $danger; }
+}
+
 .suplemento-cantidad {
   display:     flex;
   align-items: center;
@@ -801,10 +814,15 @@
     color:         $navy-800;
     transition:    all 0.15s;
 
-    &:hover {
+    &:hover:not(:disabled) {
       background:   $navy-800;
       border-color: $navy-800;
       color:        $white;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor:  not-allowed;
     }
   }
 }
@@ -1129,9 +1147,14 @@
   transition:      all 0.15s;
   width:           100%;
 
-  &:hover {
+  &:hover:not(:disabled) {
     border-color: $gold;
     background:   rgba(201,168,76,0.05);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor:  not-allowed;
   }
 }
 
@@ -1172,6 +1195,11 @@
   font-weight: 700;
   min-width:   24px;
   text-align:  center;
+}
+
+.btn-cantidad:disabled {
+  opacity: 0.4;
+  cursor:  not-allowed;
 }
 
 .btn-quitar-item {
